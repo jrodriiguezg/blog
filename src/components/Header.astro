@@ -6,7 +6,11 @@ import ThemeToggle from './ThemeToggle.astro';
 
 <header>
 	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
+		<h2>
+			<a href="/">
+				jrodriiguezg<span class="logo-dot">.</span>link
+			</a>
+		</h2>
 		<div class="internal-links">
 			<HeaderLink href="/">Home</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
@@ -61,6 +65,19 @@ import ThemeToggle from './ThemeToggle.astro';
 		text-decoration: none;
 		color: var(--title-color);
 		transition: color 0.3s ease;
+		letter-spacing: -0.02em;
+		font-weight: 700;
+	}
+	.logo-dot {
+		color: #2337ff;
+		text-shadow: 0 0 8px rgba(35, 55, 255, 0.8), 0 0 20px rgba(35, 55, 255, 0.4);
+		font-weight: 900;
+		transition: color 0.3s ease, text-shadow 0.3s ease;
+		display: inline-block;
+	}
+	:global(html.dark) .logo-dot {
+		color: #58a6ff;
+		text-shadow: 0 0 8px rgba(88, 166, 255, 0.9), 0 0 20px rgba(88, 166, 255, 0.5);
 	}
 	nav {
 		display: flex;
