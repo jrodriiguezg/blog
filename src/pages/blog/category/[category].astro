@@ -74,26 +74,19 @@ const displayTitle = categoryTitles[category] || category;
 				list-style-type: none;
 				margin: 0;
 				padding: 0;
+				justify-content: center;
 			}
 			ul li {
-				width: calc(50% - 1rem);
+				width: calc(33.333% - 1.33rem);
+				min-width: 280px;
+				max-width: 360px;
 			}
 			ul li * {
 				text-decoration: none;
 				transition: 0.2s ease;
 			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
 			ul li img {
+				width: 100%;
 				margin-bottom: 0.5rem;
 				border-radius: 12px;
 			}
@@ -116,9 +109,6 @@ const displayTitle = categoryTitles[category] || category;
 				align-items: center;
 				gap: 0.5rem;
 				margin-bottom: 0.5rem;
-			}
-			ul li:first-child .badges-row {
-				justify-content: center;
 			}
 			.category-badge {
 				display: inline-block;
