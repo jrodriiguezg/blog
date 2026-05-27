@@ -13,6 +13,16 @@ const blog = defineCollection({
 		pubDate: z.coerce.date(),
 		updatedDate: z.coerce.date().optional(),
 		heroImage: z.string().optional(),
+		// Categorías principales
+		category: z.enum([
+			"proyectos",
+			"divulgacion",
+			"miscelanea",
+			"mi-pc",
+			"configuraciones",
+		]).default("miscelanea"),
+		// Etiquetas (tags)
+		tags: z.array(z.string()).default([]),
 	}),
 });
 

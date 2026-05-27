@@ -1,14 +1,25 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../../components/FormattedDate.astro';
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
+import FormattedDate from '../../../components/FormattedDate.astro';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+export async function getStaticPaths() {
+	const categories = ['proyectos', 'divulgacion', 'miscelanea', 'mi-pc', 'configuraciones'];
+	return categories.map((category) => ({
+		params: { category },
+		props: { categoryName: category },
+	}));
+}
+
+const { category } = Astro.params;
+
+const allPosts = await getCollection('blog');
+const posts = allPosts
+	.filter((post) => post.data.category === category)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const categoryTitles: Record<string, string> = {
 	proyectos: 'Proyectos',
@@ -17,12 +28,13 @@ const categoryTitles: Record<string, string> = {
 	'mi-pc': 'Mi PC',
 	configuraciones: 'Configuraciones',
 };
+const displayTitle = categoryTitles[category] || category;
 ---
 
 <!doctype html>
 <html lang="es">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`${displayTitle} - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
 			main {
 				width: 960px;
@@ -159,6 +171,11 @@ const categoryTitles: Record<string, string> = {
 			ul a:hover img {
 				box-shadow: var(--box-shadow);
 			}
+			.empty-message {
+				text-align: center;
+				padding: 3rem;
+				color: rgb(var(--gray));
+			}
 			@media (max-width: 720px) {
 				ul {
 					gap: 0.5em;
@@ -180,18 +197,20 @@ const categoryTitles: Record<string, string> = {
 		<Header />
 		<main>
 			<div class="category-tabs">
-				<a href="/blog" class="active">Todos</a>
-				<a href="/blog/category/proyectos">Proyectos</a>
-				<a href="/blog/category/divulgacion">Divulgación</a>
-				<a href="/blog/category/miscelanea">Miscelánea</a>
-				<a href="/blog/category/mi-pc">Mi PC</a>
-				<a href="/blog/category/configuraciones">Configuraciones</a>
+				<a href="/blog">Todos</a>
+				<a href="/blog/category/proyectos" class={category === "proyectos" ? "active" : ""}>Proyectos</a>
+				<a href="/blog/category/divulgacion" class={category === "divulgacion" ? "active" : ""}>Divulgación</a>
+				<a href="/blog/category/miscelanea" class={category === "miscelanea" ? "active" : ""}>Miscelánea</a>
+				<a href="/blog/category/mi-pc" class={category === "mi-pc" ? "active" : ""}>Mi PC</a>
+				<a href="/blog/category/configuraciones" class={category === "configuraciones" ? "active" : ""}>Configuraciones</a>
 			</div>
 
 			<section>
-				<ul>
-					{
-						posts.map((post) => (
+				{posts.length === 0 ? (
+					<p class="empty-message">No hay publicaciones en esta categoría todavía.</p>
+				) : (
+					<ul>
+						{posts.map((post) => (
 							<li>
 								<a href={`/blog/${post.id}/`}>
 									<img width={720} height={360} src={post.data.heroImage} alt="" />
@@ -209,9 +228,9 @@ const categoryTitles: Record<string, string> = {
 									</p>
 								</a>
 							</li>
-						))
-					}
-				</ul>
+						))}
+					</ul>
+				)}
 			</section>
 		</main>
 		<Footer />
