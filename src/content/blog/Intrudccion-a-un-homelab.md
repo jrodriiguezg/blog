@@ -2,7 +2,7 @@
 title: "Introducción a mi HomeLab"
 description: "Primera parte de cómo he construido mi homelab"
 pubDate: "May 27 2026"
-heroImage: "/blog-placeholder-about.jpg"
+heroImage: "/homelab-hero.png"
 category: "proyectos"
 tags: ["informatica", "docker", "linux", "redes"]
 ---
