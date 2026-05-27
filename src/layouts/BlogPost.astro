@@ -25,14 +25,17 @@ const categoryTitles: Record<string, string> = {
 			main {
 				width: calc(100% - 2em);
 				max-width: 100%;
-				margin: 0;
+				margin: 0 auto;
 			}
 			.hero-image {
 				width: 100%;
+				max-width: 1020px;
+				margin: 0 auto 2rem auto;
 			}
 			.hero-image img {
 				display: block;
-				margin: 0 auto;
+				width: 100%;
+				height: auto;
 				border-radius: 12px;
 				box-shadow: var(--box-shadow);
 			}
@@ -46,8 +49,8 @@ const categoryTitles: Record<string, string> = {
 			.title {
 				margin-bottom: 1em;
 				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+				text-align: left;
+				line-height: 1.2;
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
@@ -63,7 +66,7 @@ const categoryTitles: Record<string, string> = {
 				display: flex;
 				flex-wrap: wrap;
 				align-items: center;
-				justify-content: center;
+				justify-content: flex-start;
 				gap: 0.75rem;
 				margin-top: 0.5rem;
 				margin-bottom: 1.5rem;
