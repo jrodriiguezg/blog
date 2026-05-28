@@ -15,6 +15,7 @@ const categoryTitles: Record<string, string> = {
 	miscelanea: 'Miscelánea',
 	'mi-pc': 'Mi PC',
 	configuraciones: 'Configuraciones',
+	homelab: 'HomeLab',
 };
 ---
 
@@ -131,6 +132,14 @@ const categoryTitles: Record<string, string> = {
 			.category-badge.configuraciones:hover {
 				background: rgba(139, 92, 246, 25%);
 			}
+			.category-badge.homelab {
+				background: rgba(20, 184, 166, 15%);
+				color: #14b8a6;
+				border-color: rgba(20, 184, 166, 30%);
+			}
+			.category-badge.homelab:hover {
+				background: rgba(20, 184, 166, 25%);
+			}
 			.tag-badge {
 				font-size: 0.85rem;
 				color: var(--accent);
@@ -181,5 +190,37 @@ const categoryTitles: Record<string, string> = {
 			</article>
 		</main>
 		<Footer />
+		<script>
+			import mermaid from 'mermaid';
+			
+			// Inicializar mermaid con modo oscuro por defecto
+			mermaid.initialize({
+				startOnLoad: false,
+				theme: 'dark',
+			});
+
+			// Buscar todos los bloques de código mermaid
+			const mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
+			mermaidBlocks.forEach((codeEl) => {
+				const preEl = codeEl.parentElement;
+				if (preEl) {
+					// Crear un div con la clase "mermaid" y el código sin procesar
+					const div = document.createElement('div');
+					div.className = 'mermaid';
+					div.textContent = codeEl.textContent;
+					
+					// Alinear y centrar el diagrama de manera elegante
+					div.style.display = 'flex';
+					div.style.justifyContent = 'center';
+					div.style.margin = '2rem 0';
+					
+					// Reemplazar el bloque pre original por nuestro nuevo div
+					preEl.replaceWith(div);
+				}
+			});
+
+			// Lanzar el renderizado de mermaid
+			mermaid.run();
+		</script>
 	</body>
 </html>

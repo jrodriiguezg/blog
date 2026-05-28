@@ -7,7 +7,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
 import FormattedDate from '../../../components/FormattedDate.astro';
 
 export async function getStaticPaths() {
-	const categories = ['proyectos', 'divulgacion', 'miscelanea', 'mi-pc', 'configuraciones'];
+	const categories = ['proyectos', 'divulgacion', 'miscelanea', 'mi-pc', 'configuraciones', 'homelab'];
 	return categories.map((category) => ({
 		params: { category },
 		props: { categoryName: category },
@@ -27,6 +27,7 @@ const categoryTitles: Record<string, string> = {
 	miscelanea: 'Miscelánea',
 	'mi-pc': 'Mi PC',
 	configuraciones: 'Configuraciones',
+	homelab: 'HomeLab',
 };
 const displayTitle = categoryTitles[category] || category;
 ---
@@ -146,6 +147,11 @@ const displayTitle = categoryTitles[category] || category;
 				color: #8b5cf6;
 				border-color: rgba(139, 92, 246, 30%);
 			}
+			.category-badge.homelab {
+				background: rgba(20, 184, 166, 15%);
+				color: #14b8a6;
+				border-color: rgba(20, 184, 166, 30%);
+			}
 			.tag-badge {
 				font-size: 0.8rem;
 				color: var(--accent);
@@ -193,6 +199,7 @@ const displayTitle = categoryTitles[category] || category;
 				<a href="/blog/category/miscelanea" class={category === "miscelanea" ? "active" : ""}>Miscelánea</a>
 				<a href="/blog/category/mi-pc" class={category === "mi-pc" ? "active" : ""}>Mi PC</a>
 				<a href="/blog/category/configuraciones" class={category === "configuraciones" ? "active" : ""}>Configuraciones</a>
+				<a href="/blog/category/homelab" class={category === "homelab" ? "active" : ""}>HomeLab</a>
 			</div>
 
 			<section>

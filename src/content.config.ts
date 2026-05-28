@@ -20,6 +20,7 @@ const blog = defineCollection({
 			"miscelanea",
 			"mi-pc",
 			"configuraciones",
+			"homelab",
 		]).default("miscelanea"),
 		// Etiquetas (tags)
 		tags: z.array(z.string()).default([]),

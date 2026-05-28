@@ -3,7 +3,7 @@ title: "Introducción a mi HomeLab"
 description: "Primera parte de cómo he construido mi homelab"
 pubDate: "May 27 2026"
 heroImage: "/homelab-hero.png"
-category: "proyectos"
+category: "homelab"
 tags: ["informatica", "docker", "linux", "redes"]
 ---
 # Introducción
@@ -12,8 +12,8 @@ También me he propuesto ser constante con las publicaciones que vaya haciendo (
 
 He decidido dividir todo el trabajo que he hecho en bloques, para no hacer posts demasiado largos, estos son: 
 
- [**Introducción a mi HomeLab - Puesta en marcha y primeros pasos**](/blog/introduccion-al-homelab/)
- [**Bloque de Red I - Dominios**](/blog/bloque-de-red-I)
+- [**Introducción a mi HomeLab - Puesta en marcha y primeros pasos**](/blog/introduccion-al-homelab/)
+- [**Bloque de Red I - Dominios**](/blog/bloque-de-red-I)
 - **Bloque de Red II - Servicios**
 - **Bloque de Gestión I - Administración**
 - **Bloque de Gestión II - Monitorización**

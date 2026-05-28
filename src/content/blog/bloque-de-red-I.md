@@ -3,7 +3,7 @@ title: "Bloque de Red I - Dominios"
 description: "Segunda parte de mi homelab"
 pubDate: "May 28 2026"
 heroImage: "/cloud-hero.png"
-category: "proyectos"
+category: "homelab"
 tags: ["informatica", "docker", "linux", "redes"]
 ---
 # Introducción 
@@ -12,8 +12,8 @@ Bueno, como en la entrada anterior comenté, iba a dividir el enseñar mi **Home
 Este es el bloque de red que hace referencia a toda la parte de **Internet** que no gestiono yo directamente.
 
 Si esta es vuestra primera vez leyendo este blog, os invito a ver el resto de entradas aquí: 
- [**Introducción a mi HomeLab - Puesta en marcha y primeros pasos**](/blog/introduccion-al-homelab/)
- [**Bloque de Red I - Dominios**](/blog/bloque-de-red-I)
+- [**Introducción a mi HomeLab - Puesta en marcha y primeros pasos**](/blog/introduccion-al-homelab/)
+- [**Bloque de Red I - Dominios**](/blog/bloque-de-red-I)
 - **Bloque de Red II - Servicios**
 - **Bloque de Gestión I - Administración**
 - **Bloque de Gestión II - Monitorización**
@@ -22,7 +22,60 @@ Si esta es vuestra primera vez leyendo este blog, os invito a ver el resto de en
 
 A continuación, os muestro el diagrama de red **lógico** solo con las partes que enseñaré en este bloque:
 
-<img src="https://assets.jrodriiguezg.link/diagrama_servicios_network.png" alt="Diagrama de red lógico" width="800" style="display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+```mermaid
+flowchart LR
+    %% Definición de Estilos (Colores Sleek / Modo Oscuro)
+    classDef extNode fill:#1a1a24,stroke:#8b5cf6,stroke-width:2px,color:#e9d5ff;
+    classDef proxyNode fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe;
+    classDef rpiNode fill:#1c1917,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef eliteNode fill:#172554,stroke:#3b82f6,stroke-width:2px,color:#dbeafe;
+    classDef vpnNode fill:#1e1b4b,stroke:#ec4899,stroke-width:2px,color:#fce7f3;
+
+    %% Subgraph Externo / WAN
+    subgraph WAN ["Externo / Internet"]
+        direction TB
+        internet["Internet"]:::extNode
+        cifrado["Tráfico Cifrado"]:::extNode
+        tunnel["Cloudflared Tunnel"]:::extNode
+        
+        internet --> cifrado
+        cifrado --> tunnel
+    end
+
+    %% Subgraph Proxy Reverso
+    subgraph Proxy ["Proxy Reverso"]
+        npm["Proxy Manager<br>(nginx proxy manager)<br>npm.jrodriiguezg.lan"]:::proxyNode
+    end
+
+    %% Subgraph Raspberry Pi 4
+    subgraph RPi4 ["Raspberry Pi 4"]
+        subgraph LAN_RPi ["Red Local LAN"]
+            phns1["phns1.jrodriiguezg.lan<br>(PiHole + Unbound / DNS 1)"]:::rpiNode
+            wireguard["Tailscale / Wireguard<br>(deprecado)<br>wireguard.jrodriiguezg.lan"]:::vpnNode
+        end
+    end
+
+    %% Subgraph HP Elitedesk
+    subgraph HP ["HP Elitedesk"]
+        subgraph LAN_HP ["Red Local LAN"]
+            phns2["phns2.jrodriiguezg.lan<br>(DNS 2)"]:::eliteNode
+        end
+    end
+
+    %% Flujos y Conexiones
+    tunnel --> npm
+    npm -.-> phns1
+    npm -.-> phns2
+    npm -.-> wireguard
+
+    %% Estilos de los subgrafos
+    style WAN fill:#09090b,stroke:#27272a,stroke-width:1px,color:#a1a1aa;
+    style Proxy fill:#09090b,stroke:#27272a,stroke-width:1px,color:#a1a1aa;
+    style RPi4 fill:#09090b,stroke:#f43f5e,stroke-width:1px,color:#fda4af;
+    style HP fill:#09090b,stroke:#3b82f6,stroke-width:1px,color:#93c5fd;
+    style LAN_RPi fill:#141416,stroke:#2d2d30,stroke-width:1px;
+    style LAN_HP fill:#141416,stroke:#2d2d30,stroke-width:1px;
+```
 
 
 ## Algo de teoría 
@@ -45,13 +98,101 @@ Ahora voy a explicar los dominios que tengo: tengo dos **públicos** y uno **pri
 ## Los Dominios 
 A **nivel interno** tengo un dominio con terminación `.lan`, que luego resuelve a 12 subdominios para cada servicio desplegado, los cuales podemos ver en el siguiente diagrama: 
 
-<img src="https://assets.jrodriiguezg.link/dominios_internos.png" alt="Dominios internos" width="800" style="display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+```mermaid
+flowchart LR
+    %% Definición de Estilos (Modo Oscuro Premium)
+    classDef rootNode fill:#1e1b4b,stroke:#d97706,stroke-width:3px,color:#fef3c7,font-weight:bold;
+    classDef categoryNode fill:#0f172a,stroke:#94a3b8,stroke-width:2px,color:#f1f5f9,font-weight:bold;
+    classDef rpiNode fill:#1c1917,stroke:#f43f5e,stroke-width:1.5px,color:#ffe4e6;
+    classDef eliteNode fill:#172554,stroke:#3b82f6,stroke-width:1.5px,color:#dbeafe;
+    classDef proxyNode fill:#061f2d,stroke:#06b6d4,stroke-width:1.5px,color:#cffafe;
+
+    %% Nodo Raíz
+    Root["jrodriiguezg.lan"]:::rootNode
+
+    %% Categorías / Hosts
+    CatProxy["Infraestructura / Proxy"]:::categoryNode
+    CatRPi4["Raspberry Pi 4"]:::categoryNode
+    CatHP["HP Elitedesk"]:::categoryNode
+
+    %% Conexiones Raíz a Ramas
+    Root --> CatProxy
+    Root --> CatRPi4
+    Root --> CatHP
+
+    %% Subdominios del Proxy
+    npm["npm.jrodriiguezg.lan<br>(Nginx Proxy Manager)"]:::proxyNode
+    CatProxy --> npm
+
+    %% Subdominios en Raspberry Pi 4
+    hmr["hmr.jrodriiguezg.lan<br>(Homarr)"]:::rpiNode
+    phns1["phns1.jrodriiguezg.lan<br>(DNS 1 / PiHole)"]:::rpiNode
+    uptime["uptime-kuma.jrodriiguezg.lan<br>(Uptime Kuma)"]:::rpiNode
+    gitea["gitea.jrodriiguezg.lan<br>(Gitea Server)"]:::rpiNode
+    wg["wireguard.jrodriiguezg.lan<br>(VPN)"]:::rpiNode
+    portainer1["portainer.jrodriiguezg.lan<br>(Portainer)"]:::rpiNode
+
+    CatRPi4 --> hmr
+    CatRPi4 --> phns1
+    CatRPi4 --> uptime
+    CatRPi4 --> gitea
+    CatRPi4 --> wg
+    CatRPi4 --> portainer1
+
+    %% Subdominios en HP Elitedesk
+    jelly["jellyfin.jrodriiguezg.lan<br>(Jellyfin Media)"]:::eliteNode
+    navi["navidrome.jrodriiguezg.lan<br>(Navidrome)"]:::eliteNode
+    qbtt["qbtt.jrodriiguezg.lan<br>(qBittorrent)"]:::eliteNode
+    phns2["phns2.jrodriiguezg.lan<br>(DNS 2)"]:::eliteNode
+    zabbix["zabbix.jrodriiguezg.lan<br>(Zabbix)"]:::eliteNode
+
+    CatHP --> jelly
+    CatHP --> navi
+    CatHP --> qbtt
+    CatHP --> phns2
+    CatHP --> zabbix
+
+    %% Estilos de los Subgrafos de Fondo
+    style Root font-size:16px;
+    style CatProxy fill:#09090b,stroke:#27272a,stroke-width:1px;
+    style CatRPi4 fill:#09090b,stroke:#f43f5e,stroke-width:1px;
+    style CatHP fill:#09090b,stroke:#3b82f6,stroke-width:1px;
+```
 
 > Estos no son accesibles desde **Internet**
 
 A **nivel externo**, es decir, de cara al **público**, tengo dos dominios, ambos comprados en **Cloudflare**. Estos son [jrodriiguezg.link](https://jrodriiguezg.link) y [lemoe.link](https://lemoe.link), de los cuales cuelgan varios subdominios, como vemos ahora: 
 
-<img src="https://assets.jrodriiguezg.link/externos.png" alt="Dominios externos" width="800" style="display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+```mermaid
+flowchart LR
+    %% Estilos para lemoe.link (Tonos Naranjas / Cálidos)
+    classDef lemoeRoot fill:#2e1005,stroke:#ea580c,stroke-width:3px,color:#ffedd5,font-weight:bold;
+    classDef lemoeSub fill:#1c1917,stroke:#fdba74,stroke-width:1.5px,color:#fed7aa;
+    
+    %% Estilos para jrodriiguezg.link (Tonos Púrpuras / Fríos)
+    classDef jrodRoot fill:#1e1b4b,stroke:#8b5cf6,stroke-width:3px,color:#ede9fe,font-weight:bold;
+    classDef jrodSub fill:#0f172a,stroke:#c084fc,stroke-width:1.5px,color:#e9d5ff;
+
+    %% Árbol de lemoe.link
+    Lemoe["lemoe.link"]:::lemoeRoot
+    config["config.lemoe.link"]:::lemoeSub
+    docs["docs.lemoe.link"]:::lemoeSub
+    assets["assets.lemoe.link"]:::lemoeSub
+    
+    Lemoe --> config
+    Lemoe --> docs
+    Lemoe --> assets
+
+    %% Árbol de jrodriiguezg.link
+    Jrod["jrodriiguezg.link"]:::jrodRoot
+    grape["grape.jrodriiguezg.link"]:::jrodSub
+    prrpc["prrpc.jrodriiguezg.link"]:::jrodSub
+    blog["blog.jrodriiguezg.link"]:::jrodSub
+    
+    Jrod --> grape
+    Jrod --> prrpc
+    Jrod --> blog
+```
 
 Como creo que os habéis dado cuenta porque lo he mencionado, yo uso **Cloudflare** para la **gestión** de la parte expuesta a **Internet**, así como de los dominios. Por ello, y a modo de que veáis un poco la consola de **Cloudflare** ([dash.cloudflare.com](https://dash.cloudflare.com)), voy a enseñar algunas de las configuraciones más **importantes** y partes más destacadas de la consola.
 
