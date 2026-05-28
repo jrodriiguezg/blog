@@ -2,7 +2,7 @@
 title: "Bloque de Red I - Dominios"
 description: "Segunda parte de mi homelab"
 pubDate: "May 28 2026"
-heroImage: "/homelab-hero.png"
+heroImage: "/cloud-hero.png"
 category: "proyectos"
 tags: ["informatica", "docker", "linux", "redes"]
 ---
