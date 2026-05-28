@@ -11,7 +11,7 @@ function remarkMermaid() {
 		function walk(node) {
 			if (node.type === "code" && node.lang === "mermaid") {
 				node.type = "html";
-				node.value = `<div class="mermaid" style="display: flex; justify-content: center; margin: 2rem 0; background: transparent;">${node.value}</div>`;
+				node.value = `<div class="mermaid">${node.value}</div>`;
 			}
 			if (node.children) {
 				node.children.forEach(walk);

@@ -150,6 +150,40 @@ const categoryTitles: Record<string, string> = {
 				text-decoration: underline;
 				color: var(--accent-dark);
 			}
+
+			/* Estilos para Diagramas de Mermaid */
+			.mermaid {
+				width: 100%;
+				background: transparent !important;
+				border: none !important;
+				border-radius: 0 !important;
+				padding: 0 !important;
+				box-shadow: none !important;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				overflow-x: auto;
+				margin: 2.5rem 0;
+			}
+			.mermaid svg {
+				max-width: 100% !important;
+				height: auto !important;
+				min-width: 600px; /* Evita que el diagrama se encoja a tamaños ilegibles en pantallas medianas/pequeñas */
+			}
+
+			/* Breakout panorámico para pantallas grandes (alineado con la imagen de portada de 1020px) */
+			@media (min-width: 1060px) {
+				.mermaid {
+					width: 1020px !important;
+					max-width: 1020px !important;
+					margin-left: calc(50% - 510px) !important;
+					margin-right: calc(50% - 510px) !important;
+					padding: 0 !important;
+				}
+				.mermaid svg {
+					min-width: 800px;
+				}
+			}
 		</style>
 	</head>
 
