@@ -10,5 +10,12 @@
 	"observability": {
 		"enabled": true
 	},
-	"upload_source_maps": true
+	"upload_source_maps": true,
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "comments",
+			"database_id": "886c05b2-00b3-4d2d-84ac-06f1b2add6b2"
+		}
+	]
 }

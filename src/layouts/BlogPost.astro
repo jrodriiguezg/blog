@@ -184,6 +184,150 @@ const categoryTitles: Record<string, string> = {
 					min-width: 800px;
 				}
 			}
+
+			/* Estilos de Comentarios (Completamente Planos y Transparentes) */
+			.comments-divider {
+				margin: 3.5rem 0 2rem 0;
+				border: 0;
+				border-top: 1px solid rgba(255, 255, 255, 0.1);
+			}
+			.comments-section {
+				margin-top: 2rem;
+			}
+			.comments-section h3 {
+				margin-bottom: 1.5rem;
+				font-size: 1.5rem;
+				color: var(--title-color);
+			}
+			.comments-list {
+				display: flex;
+				flex-direction: column;
+				gap: 1.5rem;
+				margin-bottom: 2.5rem;
+			}
+			.no-comments {
+				color: rgb(var(--gray));
+				font-style: italic;
+				margin-bottom: 1.5rem;
+				font-size: 0.95rem;
+			}
+			.comment-item {
+				background: transparent;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+				padding-bottom: 1.25rem;
+			}
+			.comment-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 0.6rem;
+			}
+			.comment-author-info {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+			.comment-avatar {
+				width: 32px;
+				height: 32px;
+				background: #1e1e24;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 0.85rem;
+				font-weight: 700;
+				color: var(--title-color);
+			}
+			.comment-author-name {
+				font-weight: 600;
+				color: var(--title-color);
+				font-size: 0.95rem;
+			}
+			.comment-date {
+				font-size: 0.8rem;
+				color: rgb(var(--gray));
+			}
+			.comment-body {
+				font-size: 0.95rem;
+				line-height: 1.6;
+				color: var(--text-color);
+				padding-left: 2.5rem;
+				word-break: break-word;
+			}
+			
+			/* Formulario de Comentarios */
+			.comment-form {
+				background: transparent;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 8px;
+				padding: 1.5rem;
+				margin-top: 3rem;
+			}
+			.comment-form h4 {
+				margin-top: 0;
+				margin-bottom: 1.25rem;
+				font-size: 1.15rem;
+				color: var(--title-color);
+			}
+			.form-group {
+				margin-bottom: 1.25rem;
+			}
+			.form-group label {
+				display: block;
+				margin-bottom: 0.4rem;
+				font-size: 0.85rem;
+				font-weight: 600;
+				color: var(--title-color);
+			}
+			.form-group input,
+			.form-group textarea {
+				width: 100%;
+				background: #09090b;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				border-radius: 6px;
+				padding: 0.6rem 0.8rem;
+				color: #ffffff;
+				font-family: inherit;
+				font-size: 0.95rem;
+				transition: border-color 0.2s ease, outline 0.2s ease;
+			}
+			.form-group input:focus,
+			.form-group textarea:focus {
+				border-color: var(--accent);
+				outline: 1px solid var(--accent);
+			}
+			.submit-btn {
+				background: var(--accent);
+				color: #ffffff;
+				border: none;
+				border-radius: 6px;
+				padding: 0.7rem 1.25rem;
+				font-size: 0.95rem;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background-color 0.2s ease;
+			}
+			.submit-btn:hover {
+				background: var(--accent-dark);
+			}
+			.submit-btn:disabled {
+				background: #27272a;
+				color: #71717a;
+				cursor: not-allowed;
+			}
+			.comment-message {
+				margin-top: 1rem;
+				font-size: 0.9rem;
+				font-weight: 500;
+			}
+			.comment-message.success {
+				color: #10b981;
+			}
+			.comment-message.error {
+				color: #ef4444;
+			}
 		</style>
 	</head>
 
@@ -220,6 +364,30 @@ const categoryTitles: Record<string, string> = {
 						<hr />
 					</div>
 					<slot />
+
+					<!-- Sección de Comentarios Anónimos -->
+					<hr class="comments-divider" />
+					<section class="comments-section" data-slug={Astro.params.slug}>
+						<h3>Comentarios</h3>
+						<div id="comments-list" class="comments-list">
+							<!-- Populado dinámicamente -->
+							<p class="no-comments">Cargando comentarios...</p>
+						</div>
+
+						<form id="comment-form" class="comment-form">
+							<h4>Escribir un comentario anónimo</h4>
+							<div class="form-group">
+								<label for="comment-author">Nombre o Apodo (Opcional)</label>
+								<input type="text" id="comment-author" placeholder="Anónimo" maxlength="50" autocomplete="off" />
+							</div>
+							<div class="form-group">
+								<label for="comment-content">Mensaje</label>
+								<textarea id="comment-content" required placeholder="Escribe tu comentario aquí..." maxlength="1000" rows="4"></textarea>
+							</div>
+							<button type="submit" id="submit-comment-btn" class="submit-btn">Enviar comentario</button>
+							<div id="comment-message" class="comment-message"></div>
+						</form>
+					</section>
 				</div>
 			</article>
 		</main>
@@ -232,6 +400,130 @@ const categoryTitles: Record<string, string> = {
 				startOnLoad: true,
 				theme: 'dark',
 			});
+
+			// Lógica del sistema de comentarios anónimos
+			const commentsSection = document.querySelector('.comments-section');
+			if (commentsSection) {
+				const slug = commentsSection.getAttribute('data-slug');
+				const commentsList = document.getElementById('comments-list');
+				const commentForm = document.getElementById('comment-form');
+				const messageEl = document.getElementById('comment-message');
+				const submitBtn = document.getElementById('submit-comment-btn') as HTMLButtonElement;
+
+				// Cargar comentarios
+				const loadComments = async () => {
+					try {
+						const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug || '')}`);
+						if (res.ok) {
+							const comments = await res.json();
+							renderComments(comments);
+						} else {
+							if (commentsList) commentsList.innerHTML = '<p class="no-comments">Error al cargar los comentarios.</p>';
+						}
+					} catch (e) {
+						console.error('Error al cargar comentarios:', e);
+						if (commentsList) commentsList.innerHTML = '<p class="no-comments">Error de conexión al cargar comentarios.</p>';
+					}
+				};
+
+				// Renderizar comentarios
+				const renderComments = (comments: any[]) => {
+					if (!commentsList) return;
+					if (comments.length === 0) {
+						commentsList.innerHTML = '<p class="no-comments">No hay comentarios aún. ¡Sé el primero en comentar!</p>';
+						return;
+					}
+
+					commentsList.innerHTML = comments
+						.map((c) => {
+							const date = new Date(c.created_at).toLocaleDateString('es-ES', {
+								year: 'numeric',
+								month: 'short',
+								day: 'numeric',
+								hour: '2-digit',
+								minute: '2-digit',
+							});
+							const initials = c.author_name.substring(0, 2).toUpperCase() || 'AN';
+							return `
+								<div class="comment-item">
+									<div class="comment-header">
+										<div class="comment-author-info">
+											<div class="comment-avatar">${initials}</div>
+											<span class="comment-author-name">${c.author_name}</span>
+										</div>
+										<span class="comment-date">${date}</span>
+									</div>
+									<div class="comment-body">${c.content}</div>
+								</div>
+							`;
+						})
+						.join('');
+				};
+
+				// Escuchar envío del formulario de comentarios
+				if (commentForm) {
+					commentForm.addEventListener('submit', async (e) => {
+						e.preventDefault();
+						
+						const authorEl = document.getElementById('comment-author') as HTMLInputElement;
+						const contentEl = document.getElementById('comment-content') as HTMLTextAreaElement;
+
+						if (!contentEl || contentEl.value.trim() === '') return;
+
+						// Deshabilitar botón para evitar envíos múltiples
+						if (submitBtn) {
+							submitBtn.disabled = true;
+							submitBtn.textContent = 'Enviando...';
+						}
+						if (messageEl) {
+							messageEl.textContent = '';
+							messageEl.className = 'comment-message';
+						}
+
+						try {
+							const res = await fetch('/api/comments', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({
+									slug,
+									author: authorEl?.value || '',
+									content: contentEl.value,
+								}),
+							});
+
+							if (res.ok) {
+								if (messageEl) {
+									messageEl.textContent = '¡Comentario publicado con éxito!';
+									messageEl.className = 'comment-message success';
+								}
+								if (contentEl) contentEl.value = '';
+								if (authorEl) authorEl.value = '';
+								// Recargar la lista de comentarios
+								await loadComments();
+							} else {
+								const data = await res.json();
+								if (messageEl) {
+									messageEl.textContent = data.error || 'Error al enviar el comentario.';
+									messageEl.className = 'comment-message error';
+								}
+							}
+						} catch (err) {
+							if (messageEl) {
+								messageEl.textContent = 'Error de conexión. Inténtalo de nuevo.';
+								messageEl.className = 'comment-message error';
+							}
+						} finally {
+							if (submitBtn) {
+								submitBtn.disabled = false;
+								submitBtn.textContent = 'Enviar comentario';
+							}
+						}
+					});
+				}
+
+				// Carga inicial al montar la página
+				loadComments();
+			}
 		</script>
 	</body>
 </html>

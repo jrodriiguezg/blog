@@ -23,7 +23,7 @@ Si esta es vuestra primera vez leyendo este blog, os invito a ver el resto de en
 A continuación, os muestro el diagrama de red **lógico** solo con las partes que enseñaré en este bloque:
 
 ```mermaid
-flowchart LR
+flowchart TD
     %% Definición de Estilos (Colores Sleek / Modo Oscuro)
     classDef extNode fill:#1a1a24,stroke:#8b5cf6,stroke-width:2px,color:#e9d5ff;
     classDef proxyNode fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe;
@@ -68,13 +68,13 @@ flowchart LR
     npm -.-> phns2
     npm -.-> wireguard
 
-    %% Estilos de los subgrafos
-    style WAN fill:#09090b,stroke:#27272a,stroke-width:1px,color:#a1a1aa;
-    style Proxy fill:#09090b,stroke:#27272a,stroke-width:1px,color:#a1a1aa;
-    style RPi4 fill:#09090b,stroke:#f43f5e,stroke-width:1px,color:#fda4af;
-    style HP fill:#09090b,stroke:#3b82f6,stroke-width:1px,color:#93c5fd;
-    style LAN_RPi fill:#141416,stroke:#2d2d30,stroke-width:1px;
-    style LAN_HP fill:#141416,stroke:#2d2d30,stroke-width:1px;
+    %% Estilos de los subgrafos (Fondo Transparente)
+    style WAN fill:none,stroke:#27272a,stroke-width:1px,color:#a1a1aa;
+    style Proxy fill:none,stroke:#27272a,stroke-width:1px,color:#a1a1aa;
+    style RPi4 fill:none,stroke:#f43f5e,stroke-width:1px,color:#fda4af;
+    style HP fill:none,stroke:#3b82f6,stroke-width:1px,color:#93c5fd;
+    style LAN_RPi fill:none,stroke:#2d2d30,stroke-width:1px;
+    style LAN_HP fill:none,stroke:#2d2d30,stroke-width:1px;
 ```
 
 
@@ -152,11 +152,11 @@ flowchart LR
     CatHP --> phns2
     CatHP --> zabbix
 
-    %% Estilos de los Subgrafos de Fondo
+    %% Estilos de los Subgrafos de Fondo (Fondo Transparente)
     style Root font-size:16px;
-    style CatProxy fill:#09090b,stroke:#27272a,stroke-width:1px;
-    style CatRPi4 fill:#09090b,stroke:#f43f5e,stroke-width:1px;
-    style CatHP fill:#09090b,stroke:#3b82f6,stroke-width:1px;
+    style CatProxy fill:none,stroke:#27272a,stroke-width:1px;
+    style CatRPi4 fill:none,stroke:#f43f5e,stroke-width:1px;
+    style CatHP fill:none,stroke:#3b82f6,stroke-width:1px;
 ```
 
 > Estos no son accesibles desde **Internet**
