@@ -1,0 +1,114 @@
+---
+import Layout from '../../layouts/BlogPost.astro';
+---
+
+<Layout
+	title="About me"
+	description="Learn more about Juan Raúl Rodríguez Gil (jrodriiguezg), technology enthusiast with a Maker mindset."
+	pubDate={new Date('May 27 2026')}
+	heroImage="/blog-placeholder-about.jpg"
+>
+	<p>
+		Hello! I am <strong>Juan Raúl Rodríguez Gil</strong> (known online as <strong>jrodriiguezg</strong>).
+	</p>
+
+	<blockquote>
+		I am a technology enthusiast with a «Maker» mindset, focused on integrating software with the physical world. I especially enjoy challenges that require hybrid skills: from systems administration to assembling and soldering electronic components.
+	</blockquote>
+
+	<h2>Professional Profile & Approach</h2>
+	<p>
+		I define myself by my great autonomy and problem-solving attitude towards technical challenges. Although my profile is not that of a pure software developer, I possess the necessary programming skills (scripting) to automate tasks and add features to my hardware projects.
+	</p>
+
+	<h2>Systems and Tools</h2>
+	<ul>
+		<li><strong>Linux:</strong> Advanced Fedora user in my daily life, with solid experience in Red Hat, Debian, and Ubuntu. I navigate the terminal and manage system administration with absolute ease.</li>
+		<li><strong>Hardware & IoT:</strong> Hands-on experience with Arduino, Raspberry Pi, and ESP32, including circuit design and component soldering.</li>
+	</ul>
+
+	<h2>My Featured Projects</h2>
+
+	<div class="project-card">
+		<h3><a href="https://lemoe.link" target="_blank">LEMoE</a></h3>
+		<p class="project-tags">AI / Middleware</p>
+		<p><em>Light Easy Mix Of Experts</em>. A smart middleware designed for local environments that semantically routes requests to the perfect expert model, maximizing efficiency and minimizing resource usage.</p>
+	</div>
+
+	<div class="project-card">
+		<h3><a href="https://prrpc.jrodriiguezg.link" target="_blank">PRRPC</a></h3>
+		<p class="project-tags">Linux / Hardware</p>
+		<p><em>Pico Real Rich Presence</em>. A physical external status monitor designed for modern Linux environments (Fedora/Wayland). It displays contextual information about the active application on a secondary USB-connected screen, improving time management and task visibility.</p>
+	</div>
+
+	<div class="project-card">
+		<h3><a href="https://grape.jrodriiguezg.link" target="_blank">Grape-models</a></h3>
+		<p class="project-tags">NLP / Transformers</p>
+		<p><em>Grape-models</em>. A collection of T5 models hosted on Hugging Face focused on translating natural language into executable terminal commands (bash), completely in English.</p>
+	</div>
+
+	<h2>Contact & Social Profiles</h2>
+	<p>You can find me and follow my work on:</p>
+	<ul class="contact-list">
+		<li><strong>GitHub:</strong> <a href="https://github.com/jrodriiguezg" target="_blank">@jrodriiguezg</a></li>
+		<li><strong>HuggingFace:</strong> <a href="https://huggingface.co/jrodriiguezg" target="_blank">@jrodriiguezg</a></li>
+		<li><strong>Instagram:</strong> <a href="https://www.instagram.com/jrodriiguezg.link/?hl=es" target="_blank">@jrodriiguezg.link</a></li>
+		<li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/juanraulrodriguezgil/" target="_blank">Juan Raúl Rodríguez Gil</a></li>
+		<li><strong>Email:</strong> <a href="mailto:hola@jrodriiguezg.link">hola@jrodriiguezg.link</a></li>
+	</ul>
+</Layout>
+
+<style>
+	.project-card {
+		background: rgba(var(--gray-light), 30%);
+		border: 1px solid rgba(var(--gray), 20%);
+		padding: 1.5rem;
+		border-radius: 12px;
+		margin-bottom: 1.5rem;
+		transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+	}
+	.project-card:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--box-shadow);
+		border-color: var(--accent);
+	}
+	.project-card h3 {
+		margin-top: 0;
+		margin-bottom: 0.25rem;
+		font-size: 1.5rem;
+	}
+	.project-card h3 a {
+		text-decoration: none;
+		color: var(--title-color);
+		transition: color 0.2s ease;
+	}
+	.project-card h3 a:hover {
+		color: var(--accent);
+	}
+	.project-tags {
+		font-size: 0.85rem;
+		font-weight: bold;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--accent);
+		margin-top: 0;
+		margin-bottom: 1rem;
+	}
+	.contact-list {
+		list-style: none;
+		padding: 0;
+	}
+	.contact-list li {
+		margin-bottom: 0.5rem;
+		font-size: 1.1rem;
+	}
+	.contact-list a {
+		text-decoration: none;
+		color: var(--accent);
+		transition: color 0.2s ease;
+	}
+	.contact-list a:hover {
+		color: var(--accent-dark);
+		text-decoration: underline;
+	}
+</style>

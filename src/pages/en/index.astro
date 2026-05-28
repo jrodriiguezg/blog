@@ -1,0 +1,26 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Welcome</h1>
+			<p>
+				On this blog, I will recurrently try to share the electronics and computer science projects I create. I hope to be consistent and keep it updated.
+			</p>
+			<p>
+				If you want to know more about my professional background, the systems and tools I work with, or my featured projects, I invite you to visit my <a href="https://jrodriiguezg.link/" target="_blank" rel="noopener noreferrer">portfolio</a> and my <a href="https://www.instagram.com/jrodriiguezg.link/?hl=es" target="_blank" rel="noopener noreferrer">instagram</a>.
+			</p>
+		</main>
+		<Footer />
+	</body>
+</html>

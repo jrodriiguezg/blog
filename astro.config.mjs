@@ -24,6 +24,13 @@ function remarkMermaid() {
 // https://astro.build/config
 export default defineConfig({
 	output: "static",
+	i18n: {
+		defaultLocale: "es",
+		locales: ["es", "en"],
+		routing: {
+			prefixDefaultLocale: false,
+		},
+	},
 	site: "https://example.com",
 	markdown: {
 		remarkPlugins: [remarkMermaid],

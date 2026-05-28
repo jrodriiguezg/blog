@@ -1,0 +1,25 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import BlogPost from '../../../layouts/BlogPost.astro';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+	// Obtener solo las publicaciones que están en inglés (ID comienza con 'en/')
+	const posts = await getCollection('blog');
+	const englishPosts = posts.filter((post) => post.id.startsWith('en/'));
+
+	return englishPosts.map((post) => ({
+		// Quitamos el prefijo 'en/' para resolver el slug limpio en la URL /en/blog/[slug]
+		params: { slug: post.id.replace(/^en\//, '') },
+		props: post,
+	}));
+}
+type Props = CollectionEntry<'blog'>;
+
+const post = Astro.props;
+const { Content } = await render(post);
+---
+
+<BlogPost {...post.data}>
+	<Content />
+</BlogPost>

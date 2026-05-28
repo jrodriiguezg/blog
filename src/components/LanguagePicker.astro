@@ -1,0 +1,43 @@
+---
+import { getLangFromUrl } from '../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const currentPath = Astro.url.pathname;
+
+// Quitar o poner el prefijo /en de forma inteligente
+const targetPath = lang === 'en'
+	? currentPath.replace(/^\/en/, '') || '/'
+	: `/en${currentPath === '/' ? '' : currentPath}`;
+
+const targetLang = lang === 'en' ? 'ES' : 'EN';
+const targetLabel = lang === 'en' ? 'Cambiar a Español' : 'Switch to English';
+---
+
+<a href={targetPath} class="lang-toggle" title={targetLabel}>
+	{targetLang}
+</a>
+
+<style>
+	.lang-toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: var(--text-color);
+		text-decoration: none;
+		padding: 0.3rem 0.6rem;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 6px;
+		transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+		background: transparent;
+	}
+	.lang-toggle:hover {
+		background: rgba(255, 255, 255, 0.06);
+		border-color: var(--accent);
+		color: var(--title-color);
+	}
+	:global(html.dark) .lang-toggle:hover {
+		border-color: #58a6ff;
+	}
+</style>
