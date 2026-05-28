@@ -18,7 +18,7 @@ const { category } = Astro.params;
 
 const allPosts = await getCollection('blog');
 const posts = allPosts
-	.filter((post) => post.data.category === category)
+	.filter((post) => !post.id.startsWith('en/') && post.data.category === category)
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const categoryTitles: Record<string, string> = {

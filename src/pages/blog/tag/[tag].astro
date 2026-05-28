@@ -8,8 +8,9 @@ import FormattedDate from '../../../components/FormattedDate.astro';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
+	const spanishPosts = posts.filter((post) => !post.id.startsWith('en/'));
 	const uniqueTags = Array.from(
-		new Set(posts.flatMap((post) => post.data.tags || []))
+		new Set(spanishPosts.flatMap((post) => post.data.tags || []))
 	);
 	return uniqueTags.map((tag) => ({
 		params: { tag },
@@ -21,7 +22,7 @@ const { tag } = Astro.params;
 
 const allPosts = await getCollection('blog');
 const posts = allPosts
-	.filter((post) => post.data.tags && post.data.tags.includes(tag))
+	.filter((post) => !post.id.startsWith('en/') && post.data.tags && post.data.tags.includes(tag))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const categoryTitles: Record<string, string> = {
