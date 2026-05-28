@@ -5,9 +5,28 @@ import sitemap from "@astrojs/sitemap";
 
 import cloudflare from "@astrojs/cloudflare";
 
+// Plugin personalizado para transformar bloques de código 'mermaid' en <div class="mermaid"> en tiempo de compilación
+function remarkMermaid() {
+	return (tree) => {
+		function walk(node) {
+			if (node.type === "code" && node.lang === "mermaid") {
+				node.type = "html";
+				node.value = `<div class="mermaid" style="display: flex; justify-content: center; margin: 2rem 0; background: transparent;">${node.value}</div>`;
+			}
+			if (node.children) {
+				node.children.forEach(walk);
+			}
+		}
+		walk(tree);
+	};
+}
+
 // https://astro.build/config
 export default defineConfig({
 	site: "https://example.com",
+	markdown: {
+		remarkPlugins: [remarkMermaid],
+	},
 	integrations: [mdx(), sitemap()],
 	adapter: cloudflare({
 		platformProxy: {
@@ -15,3 +34,4 @@ export default defineConfig({
 		},
 	}),
 });
+
