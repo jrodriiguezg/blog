@@ -1,8 +1,8 @@
 ---
 title: "Mi HomeLab: Ficha técnica y servicios"
 description: "Detalle completo de la infraestructura física, topología de red local y catálogo interactivo de servicios autohospedados."
-pubDate: "May 29 2026"
-heroImage: "/homelab-hero.png"
+pubDate: "June 4 2026"
+heroImage: "/spec-sheet-hero.png"
 category: "homelab"
 tags: ["informatica", "docker", "linux", "redes", "servicios"]
 pinned: true
@@ -19,7 +19,7 @@ Esta entrada sirve como **panel de control y ficha técnica unificada** de todo 
 Si queréis ver los detalles paso a paso de cómo configuré las piezas de esta red, os dejo los enlaces de la serie completa:
 - [**Introducción a mi HomeLab - Puesta en marcha y primeros pasos**](/blog/introduccion-al-homelab/)
 - [**Bloque de Red I - Dominios**](/blog/bloque-de-red-I)
-- **Bloque de Red II - Servicios**
+- [**Bloque de Red II - Servicios**](/blog/bloque-de-red-ii-servicios/)
 - **Bloque de Gestión I - Administración**
 - **Bloque de Gestión II - Monitorización**
 - **Bloque de Servicios**

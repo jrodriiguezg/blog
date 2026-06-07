@@ -14,7 +14,7 @@ This is the network block referring to all the **Internet** parts that I do not 
 If this is your first time reading this blog, I invite you to check out the other entries here:
 - [**Introduction to my HomeLab - Startup and First Steps**](/en/blog/introduccion-al-homelab/)
 - [**Network Block I - Domains**](/en/blog/bloque-de-red-I)
-- **Network Block II - Services**
+- [**Network Block II - Services**](/en/blog/bloque-de-red-ii-servicios/)
 - **Management Block I - Administration**
 - **Management Block II - Monitoring**
 - **Services Block**

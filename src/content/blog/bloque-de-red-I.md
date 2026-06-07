@@ -14,7 +14,7 @@ Este es el bloque de red que hace referencia a toda la parte de **Internet** que
 Si esta es vuestra primera vez leyendo este blog, os invito a ver el resto de entradas aquí: 
 - [**Introducción a mi HomeLab - Puesta en marcha y primeros pasos**](/blog/introduccion-al-homelab/)
 - [**Bloque de Red I - Dominios**](/blog/bloque-de-red-I)
-- **Bloque de Red II - Servicios**
+- [**Bloque de Red II - Servicios**](/blog/bloque-de-red-ii-servicios/)
 - **Bloque de Gestión I - Administración**
 - **Bloque de Gestión II - Monitorización**
 - **Bloque de Servicios**

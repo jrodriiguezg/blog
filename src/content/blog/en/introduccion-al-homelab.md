@@ -14,7 +14,7 @@ I have decided to split all the work I've done into blocks, to avoid making the 
 
 - [**Introduction to my HomeLab - Startup and First Steps**](/en/blog/introduccion-al-homelab/)
 - [**Network Block I - Domains**](/en/blog/bloque-de-red-I)
-- **Network Block II - Services**
+- [**Network Block II - Services**](/en/blog/bloque-de-red-ii-servicios/)
 - **Management Block I - Administration**
 - **Management Block II - Monitoring**
 - **Services Block**

@@ -2,7 +2,7 @@
 title: "Network Block II - Services"
 description: "Third part of my homelab"
 pubDate: "June 2 2026"
-heroImage: "/homelab-hero.png"
+heroImage: "/network-services-hero.png"
 category: "homelab"
 tags: ["computing", "docker", "linux", "networking"]
 ---
@@ -66,7 +66,13 @@ You can see in the diagram the services that correspond to the network block. Si
 
 If this is your first time reading this blog, I invite you to see the rest of the entries here:
 
-> Add the index with the rest of the entries
+- [**Introduction to my HomeLab - Startup and First Steps**](/en/blog/introduccion-al-homelab/)
+- [**Network Block I - Domains**](/en/blog/bloque-de-red-I)
+- [**Network Block II - Services**](/en/blog/bloque-de-red-ii-servicios/)
+- **Management Block I - Administration**
+- **Management Block II - Monitoring**
+- **Services Block**
+- **Tweaks, Backups, and Extras**
 
 > The *compose* files published here will be adapted to be deployed independently without being on the same network *stack*
 
@@ -136,16 +142,16 @@ Although I have quite a few blocklists, they don't usually block much because I 
 
 
 The first thing is the main panel (*dashboard*), which shows a summary of all the requests that have been made, those that have been blocked, the total number of domains on lists, and activity graphs by hour.
-<img src="https://assets.jrodriiguezg.link/phns1.png" alt="phns1" width="400" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+<img src="https://assets.jrodriiguezg.link/phns1.png" alt="phns1" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
 Then we have the *queries* tab, where we can see the DNS queries that have been made and to which domain, as well as whether they were blocked or not.
-<img src="https://assets.jrodriiguezg.link/querys.png" alt="querys" width="400" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+<img src="https://assets.jrodriiguezg.link/querys.png" alt="querys" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
 In the lists tab, we have the *hosts* lists we have configured, and this is where more lists are configured and activated or deactivated.
-<img src="https://assets.jrodriiguezg.link/blocklist.png" alt="blocklist" width="400" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+<img src="https://assets.jrodriiguezg.link/blocklist.png" alt="blocklist" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
 And finally, my most used feature: DNS (Local DNS Settings). Here I declare the internal domain and the IP where it is located, although everything points to NPM since it is the one doing the redirection.
-<img src="https://assets.jrodriiguezg.link/phns1-dns.png" alt="phns1-dns" width="400" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+<img src="https://assets.jrodriiguezg.link/phns1-dns.png" alt="phns1-dns" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
 
 ### unbound
@@ -263,7 +269,7 @@ It is a technology that allows creating a secure and encrypted connection betwee
 
 #### Configuration and Deployment
 The deployment is quite simple since it is one of the few packages that are installed at the system level without using *Docker*. We need to head over to the *Tailscale* *dashboard* and create an account at [login.tailscale.com](https://login.tailscale.com/); once there, we click on *Add Device* to add a server or a client.
-<img src="https://assets.jrodriiguezg.link/tailscale.png" alt="tailscale" width="400" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+<img src="https://assets.jrodriiguezg.link/tailscale.png" alt="tailscale" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
 If we click on **Server**, it will ask us for a series of details, such as:
 - **Ephemeral**: If we want the server to disappear from the network when it disconnects.
@@ -272,16 +278,16 @@ If we click on **Server**, it will ask us for a series of details, such as:
 - **Auth Key Expiration**: This is to set an expiration for the API key (if it expires, the device keeps working).
 
 After that, we just click on **Generate Install Script**:
-<img src="https://assets.jrodriiguezg.link/tailscale2.png" alt="tailscale2" width="400" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+<img src="https://assets.jrodriiguezg.link/tailscale2.png" alt="tailscale2" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
 And it will return a script like the following, which we need to copy and paste into our terminal:
-<img src="https://assets.jrodriiguezg.link/tailscale3.png" alt="tailscale3" width="400" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+<img src="https://assets.jrodriiguezg.link/tailscale3.png" alt="tailscale3" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
 
 #### Client Configuration
 For clients, the process is pretty much the same, but we will click on **Client device** instead of **Linux server**.
 Depending on the OS to be used, the page will provide a download link and the installation and configuration guide.
-<img src="https://assets.jrodriiguezg.link/tailscale4.png" alt="tailscale4" width="400" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+<img src="https://assets.jrodriiguezg.link/tailscale4.png" alt="tailscale4" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
 And that's it for this third post, greetings to whoever is reading.
 

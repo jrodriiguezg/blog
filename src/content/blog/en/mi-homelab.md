@@ -2,7 +2,7 @@
 title: "My HomeLab: Spec Sheet & Services"
 description: "A comprehensive detail of the physical infrastructure, local network topology, and interactive self-hosted services catalog."
 pubDate: "May 29 2026"
-heroImage: "/homelab-hero.png"
+heroImage: "/spec-sheet-hero.png"
 category: "homelab"
 tags: ["computing", "docker", "linux", "networking", "services"]
 pinned: true
@@ -17,7 +17,7 @@ This entry serves as a **unified control panel and spec sheet** for my entire la
 If you want to see the step-by-step details of how I configured the parts of this network, here are the links to the full series:
 - [**Introduction to my HomeLab - Setup and First Steps**](/en/blog/introduccion-al-homelab/)
 - [**Networking Block I - Domains**](/en/blog/bloque-de-red-I)
-- **Networking Block II - Services**
+- [**Networking Block II - Services**](/en/blog/bloque-de-red-ii-servicios/)
 - **Management Block I - Administration**
 - **Management Block II - Monitoring**
 - **Services Block**
