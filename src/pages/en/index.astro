@@ -9,7 +9,11 @@ import FormattedDate from '../../components/FormattedDate.astro';
 // Obtener solo las publicaciones en inglés (ID comienza con 'en/')
 const posts = (await getCollection('blog'))
 	.filter((post) => post.id.startsWith('en/'))
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+	.sort((a, b) => {
+		if (a.data.pinned && !b.data.pinned) return -1;
+		if (!a.data.pinned && b.data.pinned) return 1;
+		return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+	});
 
 const categoryTitles: Record<string, string> = {
 	proyectos: 'Projects',
@@ -141,6 +145,17 @@ const categoryTitles: Record<string, string> = {
 				color: #14b8a6;
 				border-color: rgba(20, 184, 166, 30%);
 			}
+			.pinned-badge {
+				display: inline-block;
+				padding: 0.2rem 0.6rem;
+				font-size: 0.75rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				border-radius: 6px;
+				background: rgba(245, 158, 11, 15%);
+				color: #f59e0b;
+				border: 1px solid rgba(245, 158, 11, 30%);
+			}
 			.tag-badge {
 				font-size: 0.8rem;
 				color: var(--accent);
@@ -201,6 +216,9 @@ const categoryTitles: Record<string, string> = {
 									<a href={`/en/blog/${cleanSlug}/`}>
 										<img width={720} height={360} src={post.data.heroImage} alt="" />
 										<div class="badges-row">
+											{post.data.pinned && (
+												<span class="pinned-badge">Pinned</span>
+											)}
 											<span class={`category-badge ${post.data.category}`}>
 												{categoryTitles[post.data.category] || post.data.category}
 											</span>

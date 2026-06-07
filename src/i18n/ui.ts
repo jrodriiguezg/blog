@@ -35,6 +35,13 @@ export const ui = {
 		'about.projects': 'Proyectos destacados',
 		'about.contact': 'Contacto y perfiles',
 		'home.title': 'Bienvenido',
+		'search.placeholder': 'Buscar artículos, categorías, etiquetas...',
+		'search.noResults': 'No se encontraron resultados para su búsqueda.',
+		'search.closeHint': 'ESC para cerrar',
+		'search.navHint': 'Navegar',
+		'search.selectHint': 'Seleccionar',
+		'nav.resources': 'Recursos',
+		'nav.configurations': 'Configuraciones',
 	},
 	en: {
 		'nav.home': 'Home',
@@ -65,6 +72,13 @@ export const ui = {
 		'about.projects': 'Featured Projects',
 		'about.contact': 'Contact & Profiles',
 		'home.title': 'Welcome',
+		'search.placeholder': 'Search articles, categories, tags...',
+		'search.noResults': 'No results found for your query.',
+		'search.closeHint': 'ESC to close',
+		'search.navHint': 'Navigate',
+		'search.selectHint': 'Select',
+		'nav.resources': 'Resources',
+		'nav.configurations': 'Configurations',
 	},
 } as const;
 

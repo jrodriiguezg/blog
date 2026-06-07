@@ -1,0 +1,604 @@
+---
+import Layout from '../../layouts/BlogPost.astro';
+import { Code } from 'astro:components';
+
+// GitHub configuration to fetch files
+const GITHUB_USER = 'jrodriiguezg';
+const REPO = 'files';
+
+const loadedFiles = [];
+let hasError = false;
+
+// English human-readable names
+const FRIENDLY_NAMES = {
+	'pi-node': 'Raspberry Pi 4',
+	'hp-node': 'HP Elitedesk',
+	'npm': 'Nginx Proxy Manager',
+	'pihole+unbound': 'Pi-hole & Unbound',
+	'wgeasy': 'WG Easy (Wireguard)',
+};
+
+const SERVICE_DESCRIPTIONS = {
+	'npm': 'Reverse proxy with a graphical user interface to manage SSL/TLS certificates and route incoming requests to local containers.',
+	'pihole+unbound': 'Network-wide DNS ad-blocker combined with Unbound as a recursive resolver for complete privacy and performance.',
+	'wgeasy': 'VPN server based on Wireguard with a simplified web UI for quick creation and management of external clients.'
+};
+
+function getFriendlyName(key) {
+	if (FRIENDLY_NAMES[key]) return FRIENDLY_NAMES[key];
+	return key
+		.replace(/[-_+]/g, ' ')
+		.replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function getServiceDescription(key) {
+	if (SERVICE_DESCRIPTIONS[key]) return SERVICE_DESCRIPTIONS[key];
+	return 'Optimized Docker Compose configuration file for HomeLab deployment.';
+}
+
+try {
+	const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO}/git/trees/main?recursive=1`, {
+		headers: {
+			'User-Agent': 'Astro-Blog-Agent'
+		}
+	});
+	if (response.ok) {
+		const result = await response.json();
+		const items = result.tree || [];
+		
+		// Filter only compose.yaml or docker-compose.yml files in nested folders (node/service)
+		const composeFiles = items.filter(item => 
+			item.type === 'blob' && 
+			item.path.split('/').length >= 3 &&
+			(item.path.endsWith('.yml') || item.path.endsWith('.yaml'))
+		);
+
+		for (const file of composeFiles) {
+			const parts = file.path.split('/');
+			const node = parts[0];
+			const service = parts[1];
+			const name = parts[parts.length - 1];
+
+			const downloadUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO}/main/${file.path}`;
+			const rawRes = await fetch(downloadUrl);
+			if (rawRes.ok) {
+				const content = await rawRes.text();
+				
+				loadedFiles.push({
+					path: file.path,
+					node,
+					service,
+					name,
+					content,
+					lang: 'yaml',
+					githubUrl: `https://github.com/${GITHUB_USER}/${REPO}/blob/main/${file.path}`,
+					rawUrl: downloadUrl
+				});
+			}
+		}
+	} else {
+		throw new Error(`Error fetching repo tree: Status ${response.status}`);
+	}
+} catch (err) {
+	hasError = true;
+	console.error('Error fetching dynamic dotfiles, falling back to placeholders:', err);
+}
+
+// Fallback logic with mockups in case of connection failure or API rate limit exceeded
+if (loadedFiles.length === 0) {
+	loadedFiles.push(
+		{
+			path: 'pi-node/npm/compose.yaml',
+			node: 'pi-node',
+			service: 'npm',
+			name: 'compose.yaml',
+			content: `version: '3.8'
+
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - ./docker/npm/data:/data
+      - ./docker/npm/letsencrypt:/letsencrypt`,
+			lang: 'yaml',
+			githubUrl: 'https://github.com/jrodriiguezg/files/blob/main/pi-node/npm/compose.yaml',
+			rawUrl: 'https://raw.githubusercontent.com/jrodriiguezg/files/main/pi-node/npm/compose.yaml'
+		},
+		{
+			path: 'pi-node/pihole+unbound/compose.yaml',
+			node: 'pi-node',
+			service: 'pihole+unbound',
+			name: 'compose.yaml',
+			content: `version: '3.8'
+
+services:
+  unbound:
+    image: mvance/unbound-rpi:latest
+    container_name: unbound
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /pihole/unbound:/opt/unbound/etc/unbound
+
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      - unbound
+    environment:
+      TZ: Europe/Madrid
+      WEBPASSWORD: "CLAVE_SEGURA"
+      PIHOLE_DNS_: "127.0.0.1#5335"
+      DNSSEC: "true"
+      DNSMASQ_LISTENING: "all"
+      WEB_PORT: "8080"
+    volumes:
+      - /etc:/etc/pihole
+      - /dnsmasq:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN`,
+			lang: 'yaml',
+			githubUrl: 'https://github.com/jrodriiguezg/files/blob/main/pi-node/pihole+unbound/compose.yaml',
+			rawUrl: 'https://raw.githubusercontent.com/jrodriiguezg/files/main/pi-node/pihole+unbound/compose.yaml'
+		},
+		{
+			path: 'pi-node/wgeasy/compose.yaml',
+			node: 'pi-node',
+			service: 'wgeasy',
+			name: 'compose.yaml',
+			content: `version: '3.8'
+
+services:
+  wireguard:
+    image: ghcr.io/wg-easy/wg-easy:latest
+    container_name: wireguard
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      WG_HOST: "AQUI_IP_PUBLICA"
+      PASSWORD_HASH: 'HASH_DE_CONTRASEÑA'
+      WG_DEFAULT_DNS: "127.0.0.1"
+      WG_DEFAULT_ADDRESS: "10.8.0.x"
+      PORT: 51821
+      WG_PORT: 51820
+    volumes:
+      - /docker/wireguard:/etc/wireguard
+      - /lib/modules:/lib/modules:ro 
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1`,
+			lang: 'yaml',
+			githubUrl: 'https://github.com/jrodriiguezg/files/blob/main/pi-node/wgeasy/compose.yaml',
+			rawUrl: 'https://raw.githubusercontent.com/jrodriiguezg/files/main/pi-node/wgeasy/compose.yaml'
+		}
+	);
+}
+
+// Group loaded files by node and then by service
+const groupedData = {};
+loadedFiles.forEach(file => {
+	if (!groupedData[file.node]) {
+		groupedData[file.node] = {};
+	}
+	if (!groupedData[file.node][file.service]) {
+		groupedData[file.node][file.service] = [];
+	}
+	groupedData[file.node][file.service].push(file);
+});
+
+const nodeKeys = Object.keys(groupedData);
+---
+
+<Layout
+	title="Configurations & Compose"
+	description="Docker Compose repository for my HomeLab structured by physical and logical nodes, ready to download and deploy."
+	pubDate={new Date('June 7 2026')}
+	heroImage="/configuraciones-hero.png"
+>
+	<p>
+		This section stores the functional **Docker Compose** templates I use in my HomeLab, dynamically fetched from the public GitHub repository <a href={`https://github.com/${GITHUB_USER}/${REPO}`} target="_blank" rel="noopener noreferrer"><strong>{GITHUB_USER}/{REPO}</strong></a>. 
+		You can navigate through the different nodes and services to inspect, copy code, or download files directly.
+	</p>
+
+	<div class="sync-banner">
+		<span class="sync-status"><span class="dot animate-pulse"></span> Synced with GitHub</span>
+		<a href={`https://github.com/${GITHUB_USER}/${REPO}`} class="repo-link" target="_blank" rel="noopener noreferrer">
+			<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+			{GITHUB_USER}/{REPO}
+		</a>
+	</div>
+
+	<!-- Node Selector (Main buttons) -->
+	<h3 class="selector-title">1. Select Physical Node:</h3>
+	<div class="node-tabs">
+		{nodeKeys.map((node, index) => (
+			<button class={`node-tab-btn ${index === 0 ? 'active' : ''}`} data-node={node}>
+				<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="tab-icon"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+				{getFriendlyName(node)}
+			</button>
+		))}
+	</div>
+
+	<!-- Service Selector (Secondary buttons, grouped by Node) -->
+	<h3 class="selector-title">2. Select Service:</h3>
+	<div class="service-tabs-container">
+		{nodeKeys.map((node, nodeIdx) => (
+			<div class={`service-tabs-group ${nodeIdx === 0 ? '' : 'hidden'}`} data-node={node}>
+				{Object.keys(groupedData[node]).map((service, serviceIdx) => (
+					<button class={`service-tab-btn ${serviceIdx === 0 ? 'active' : ''}`} data-node={node} data-service={service}>
+						{getFriendlyName(service)}
+					</button>
+				))}
+			</div>
+		))}
+	</div>
+
+	<!-- Selected Compose Code Container -->
+	<div class="recursos-container">
+		{nodeKeys.map((node, nodeIdx) => (
+			Object.keys(groupedData[node]).map((service, serviceIdx) => (
+				<div class={`service-content ${nodeIdx === 0 && serviceIdx === 0 ? '' : 'hidden'}`} data-node={node} data-service={service}>
+					{groupedData[node][service].map((file) => (
+						<div class="config-block">
+							<div class="config-header-info">
+								<div class="header-left">
+									<div class="path-badge">
+										<code>{file.path}</code>
+									</div>
+									<h4 class="service-display-name">{getFriendlyName(file.service)}</h4>
+									<p class="service-description">{getServiceDescription(file.service)}</p>
+								</div>
+								<div class="header-actions">
+									<button class="copy-btn" data-code={file.content} title="Copy to clipboard">
+										<span class="copy-text">Copy</span>
+										<svg class="copy-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+									</button>
+									<a href={file.githubUrl} class="github-file-link" target="_blank" rel="noopener noreferrer" title="View file on GitHub">
+										<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+									</a>
+									<a href={file.rawUrl} class="github-file-link download-link" target="_blank" rel="noopener noreferrer" title="Download RAW">
+										<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+									</a>
+								</div>
+							</div>
+							<div class="code-wrapper">
+								<Code code={file.content} lang={file.lang} theme="github-dark" />
+							</div>
+						</div>
+					))}
+				</div>
+			))
+		))}
+	</div>
+</Layout>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		// Clipboard copy control
+		const copyButtons = document.querySelectorAll('.copy-btn');
+		copyButtons.forEach(button => {
+			button.addEventListener('click', async () => {
+				const code = button.getAttribute('data-code');
+				const textSpan = button.querySelector('.copy-text');
+				
+				try {
+					await navigator.clipboard.writeText(code);
+					if (textSpan) {
+						textSpan.textContent = 'Copied!';
+						button.classList.add('copied');
+						setTimeout(() => {
+							textSpan.textContent = 'Copy';
+							button.classList.remove('copied');
+						}, 2000);
+					}
+				} catch (err) {
+					console.error('Error copying code:', err);
+				}
+			});
+		});
+
+		// Tab navigation logic
+		const nodeButtons = document.querySelectorAll('.node-tab-btn');
+		const serviceGroups = document.querySelectorAll('.service-tabs-group');
+		const serviceButtons = document.querySelectorAll('.service-tab-btn');
+		const contentBlocks = document.querySelectorAll('.service-content');
+
+		nodeButtons.forEach(btn => {
+			btn.addEventListener('click', () => {
+				const node = btn.getAttribute('data-node');
+
+				// Activate node button
+				nodeButtons.forEach(b => b.classList.remove('active'));
+				btn.classList.add('active');
+
+				// Show the corresponding service tabs group and hide others
+				serviceGroups.forEach(group => {
+					if (group.getAttribute('data-node') === node) {
+						group.classList.remove('hidden');
+						// Auto click first available service
+						const firstServiceBtn = group.querySelector('.service-tab-btn');
+						if (firstServiceBtn) {
+							firstServiceBtn.click();
+						}
+					} else {
+						group.classList.add('hidden');
+					}
+				});
+			});
+		});
+
+		serviceButtons.forEach(btn => {
+			btn.addEventListener('click', () => {
+				const node = btn.getAttribute('data-node');
+				const service = btn.getAttribute('data-service');
+
+				// Activate service button in the active group
+				const activeGroup = document.querySelector(`.service-tabs-group:not(.hidden)`);
+				if (activeGroup) {
+					activeGroup.querySelectorAll('.service-tab-btn').forEach(b => b.classList.remove('active'));
+				}
+				btn.classList.add('active');
+
+				// Show the corresponding service code content block
+				contentBlocks.forEach(block => {
+					if (block.getAttribute('data-node') === node && block.getAttribute('data-service') === service) {
+						block.classList.remove('hidden');
+					} else {
+						block.classList.add('hidden');
+					}
+				});
+			});
+		});
+	});
+</script>
+
+<style>
+	.selector-title {
+		font-size: 1rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: #a1a1aa;
+		margin: 1.5rem 0 0.75rem 0;
+	}
+	.sync-banner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: #09090b;
+		border: 1px solid #27272a;
+		border-radius: 10px;
+		padding: 0.75rem 1.25rem;
+		margin: 1.5rem 0 2rem 0;
+	}
+	.sync-status {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.9rem;
+		color: #e4e4e7;
+		font-weight: 500;
+	}
+	.dot {
+		width: 8px;
+		height: 8px;
+		background-color: #10b981;
+		border-radius: 50%;
+		display: inline-block;
+		box-shadow: 0 0 8px #10b981;
+	}
+	.repo-link {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		color: var(--accent);
+		text-decoration: none;
+		font-size: 0.9rem;
+		font-weight: 600;
+		transition: color 0.2s;
+	}
+	.repo-link:hover {
+		color: var(--accent-dark);
+		text-decoration: underline;
+	}
+	.node-tabs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-bottom: 1rem;
+	}
+	.node-tab-btn {
+		background: #09090b;
+		border: 1px solid #27272a;
+		color: #a1a1aa;
+		padding: 0.6rem 1.25rem;
+		border-radius: 8px;
+		font-size: 0.95rem;
+		font-weight: 600;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+	.node-tab-btn:hover {
+		border-color: #3f3f46;
+		color: #f4f4f5;
+		background: #18181b;
+	}
+	.node-tab-btn.active {
+		background: rgba(var(--accent-rgb), 0.1);
+		border-color: var(--accent);
+		color: var(--accent);
+		box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.25);
+	}
+	.tab-icon {
+		opacity: 0.7;
+	}
+	.node-tab-btn.active .tab-icon {
+		opacity: 1;
+	}
+	.service-tabs-container {
+		margin-bottom: 1.5rem;
+	}
+	.service-tabs-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		transition: opacity 0.2s;
+	}
+	.service-tab-btn {
+		background: #18181b;
+		border: 1px solid #27272a;
+		color: #71717a;
+		padding: 0.4rem 1rem;
+		border-radius: 9999px;
+		font-size: 0.85rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	.service-tab-btn:hover {
+		border-color: #3f3f46;
+		color: #d4d4d8;
+	}
+	.service-tab-btn.active {
+		background: #27272a;
+		border-color: #52525b;
+		color: #f4f4f5;
+	}
+	.recursos-container {
+		display: flex;
+		flex-direction: column;
+		gap: 2.5rem;
+		margin-top: 1rem;
+	}
+	.service-content.hidden, .service-tabs-group.hidden {
+		display: none !important;
+	}
+	.config-block {
+		background: #09090b;
+		border: 1px solid #27272a;
+		border-radius: 12px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+		transition: border-color 0.2s;
+	}
+	.config-block:hover {
+		border-color: #3f3f46;
+	}
+	.config-header-info {
+		padding: 1.25rem 1.5rem;
+		border-bottom: 1px solid #27272a;
+		background: #0c0c0e;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1.5rem;
+	}
+	.header-left {
+		flex-grow: 1;
+	}
+	.path-badge {
+		display: inline-block;
+		font-size: 0.75rem;
+		background: #18181b;
+		border: 1px solid #27272a;
+		color: #d4d4d8;
+		padding: 0.15rem 0.5rem;
+		border-radius: 4px;
+		margin-bottom: 0.5rem;
+	}
+	.service-display-name {
+		margin: 0 0 0.25rem 0;
+		font-size: 1.35rem;
+		font-weight: 700;
+		color: #ffffff;
+	}
+	.service-description {
+		margin: 0;
+		font-size: 0.95rem;
+		color: #a1a1aa;
+		line-height: 1.4;
+	}
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.copy-btn {
+		background: #18181b;
+		border: 1px solid #27272a;
+		color: #a1a1aa;
+		padding: 0.45rem 0.9rem;
+		border-radius: 6px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		transition: all 0.2s;
+		outline: none;
+	}
+	.copy-btn:hover {
+		background: #27272a;
+		color: #f4f4f5;
+		border-color: #3f3f46;
+	}
+	.copy-btn.copied {
+		background: rgba(16, 185, 129, 10%);
+		border-color: rgba(16, 185, 129, 30%);
+		color: #10b981;
+	}
+	.github-file-link {
+		background: #18181b;
+		border: 1px solid #27272a;
+		color: #a1a1aa;
+		width: 34px;
+		height: 34px;
+		border-radius: 6px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s;
+	}
+	.github-file-link:hover {
+		background: #27272a;
+		color: #f4f4f5;
+		border-color: #3f3f46;
+	}
+	.code-wrapper {
+		font-size: 0.875rem;
+	}
+	:global(.code-wrapper pre) {
+		margin: 0 !important;
+		padding: 1.5rem !important;
+		background: #09090b !important;
+	}
+	@media (max-width: 640px) {
+		.config-header-info {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+		}
+		.header-actions {
+			width: 100%;
+			justify-content: flex-end;
+		}
+		.sync-banner {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+	}
+</style>

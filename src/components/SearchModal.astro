@@ -1,0 +1,482 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div id="search-modal" class="search-modal-overlay" aria-modal="true" role="dialog">
+	<div id="search-backdrop" class="search-backdrop"></div>
+	<div class="search-container">
+		<div class="search-header">
+			<svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+				<circle cx="11" cy="11" r="8"></circle>
+				<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+			</svg>
+			<input 
+				type="text" 
+				id="search-input" 
+				placeholder={t('search.placeholder')} 
+				autocomplete="off" 
+				spellcheck="false"
+			/>
+			<button id="close-search-btn" class="close-btn" aria-label="Cerrar búsqueda">
+				<kbd>ESC</kbd>
+			</button>
+		</div>
+		<div class="search-body">
+			<div id="search-results" class="search-results">
+				<p class="search-prompt">Escribe para empezar a buscar...</p>
+			</div>
+		</div>
+		<div class="search-footer">
+			<div class="footer-hint">
+				<kbd>↑↓</kbd> <span>{t('search.navHint')}</span>
+			</div>
+			<div class="footer-hint">
+				<kbd>↵</kbd> <span>{t('search.selectHint')}</span>
+			</div>
+			<div class="footer-hint">
+				<kbd>ESC</kbd> <span>{t('search.closeHint')}</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.search-modal-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: 9999;
+		display: none;
+		align-items: flex-start;
+		justify-content: center;
+		padding: 4rem 1rem 1rem 1rem;
+	}
+
+	.search-modal-overlay.open {
+		display: flex;
+	}
+
+	.search-backdrop {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(9, 9, 11, 0.88); /* Sólido oscuro nítido sin glassmorphism */
+		transition: opacity 0.2s ease;
+	}
+
+	.search-container {
+		position: relative;
+		width: 100%;
+		max-width: 600px;
+		background: #09090b; /* Fondo ultra oscuro sólido */
+		border: 1px solid #27272a; /* Bordes planos */
+		border-radius: 12px;
+		display: flex;
+		flex-direction: column;
+		max-height: 70vh;
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+		overflow: hidden;
+		animation: slideDown 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+
+	@keyframes slideDown {
+		from {
+			transform: translateY(-20px);
+			opacity: 0;
+		}
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
+	.search-header {
+		display: flex;
+		align-items: center;
+		padding: 1rem 1.25rem;
+		border-bottom: 1px solid #27272a;
+		gap: 0.75rem;
+	}
+
+	.search-icon {
+		color: #71717a;
+	}
+
+	#search-input {
+		flex: 1;
+		background: transparent;
+		border: none;
+		color: #f4f4f5;
+		font-size: 1.1rem;
+		outline: none;
+		padding: 0.25rem 0;
+		font-family: inherit;
+	}
+
+	#search-input::placeholder {
+		color: #52525b;
+	}
+
+	.close-btn {
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+	}
+
+	kbd {
+		background: #18181b;
+		border: 1px solid #3f3f46;
+		color: #a1a1aa;
+		border-radius: 4px;
+		padding: 0.2rem 0.4rem;
+		font-size: 0.75rem;
+		font-family: inherit;
+		box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+	}
+
+	.search-body {
+		flex: 1;
+		overflow-y: auto;
+		padding: 0.5rem 0;
+		max-height: 50vh;
+		background: #09090b;
+	}
+
+	.search-results {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.search-prompt,
+	.search-no-results {
+		text-align: center;
+		padding: 3rem 1.5rem;
+		color: #71717a;
+		font-style: italic;
+		margin: 0;
+	}
+
+	:global(.search-item) {
+		display: flex;
+		flex-direction: column;
+		padding: 0.85rem 1.25rem;
+		text-decoration: none !important;
+		color: #a1a1aa !important;
+		border-left: 3px solid transparent;
+		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+	}
+
+	:global(.search-item:hover),
+	:global(.search-item.selected) {
+		background-color: #18181b !important; /* Plano gris oscuro al seleccionar */
+		border-left-color: var(--accent) !important;
+		color: #f4f4f5 !important;
+		outline: none;
+		text-decoration: none !important;
+	}
+
+	:global(.item-title) {
+		font-weight: 600;
+		color: #f4f4f5 !important;
+		margin-bottom: 0.25rem;
+		font-size: 1.05rem;
+		text-decoration: none !important;
+	}
+
+	:global(.item-desc) {
+		font-size: 0.875rem;
+		color: #71717a !important;
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		margin-bottom: 0.5rem;
+		text-decoration: none !important;
+	}
+
+	:global(.item-meta) {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		text-decoration: none !important;
+	}
+
+	:global(.item-cat) {
+		display: inline-block;
+		padding: 0.1rem 0.4rem;
+		font-size: 0.7rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		border-radius: 4px;
+		background: rgba(113, 113, 122, 15%) !important;
+		color: #a1a1aa !important;
+		border: 1px solid rgba(113, 113, 122, 25%) !important;
+		text-decoration: none !important;
+	}
+
+	:global(.item-cat.proyectos) {
+		background: rgba(59, 130, 246, 15%) !important;
+		color: #3b82f6 !important;
+		border-color: rgba(59, 130, 246, 30%) !important;
+	}
+
+	:global(.item-cat.divulgacion) {
+		background: rgba(16, 185, 129, 15%) !important;
+		color: #10b981 !important;
+		border-color: rgba(16, 185, 129, 30%) !important;
+	}
+
+	:global(.item-cat.miscelanea) {
+		background: rgba(107, 114, 128, 15%) !important;
+		color: #6b7280 !important;
+		border-color: rgba(107, 114, 128, 30%) !important;
+	}
+
+	:global(.item-cat.mi-pc) {
+		background: rgba(245, 158, 11, 15%) !important;
+		color: #f59e0b !important;
+		border-color: rgba(245, 158, 11, 30%) !important;
+	}
+
+	:global(.item-cat.configuraciones) {
+		background: rgba(139, 92, 246, 15%) !important;
+		color: #8b5cf6 !important;
+		border-color: rgba(139, 92, 246, 30%) !important;
+	}
+
+	:global(.item-cat.homelab) {
+		background: rgba(20, 184, 166, 15%) !important;
+		color: #14b8a6 !important;
+		border-color: rgba(20, 184, 166, 30%) !important;
+	}
+
+	:global(.item-tag) {
+		font-size: 0.75rem;
+		color: var(--accent) !important;
+		font-weight: 500;
+		text-decoration: none !important;
+	}
+
+	.search-footer {
+		display: flex;
+		align-items: center;
+		padding: 0.75rem 1.25rem;
+		border-top: 1px solid #27272a;
+		background: #09090b;
+		gap: 1.5rem;
+	}
+
+	.footer-hint {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-size: 0.75rem;
+		color: #71717a;
+	}
+
+	@media (max-width: 480px) {
+		.search-modal-overlay {
+			padding: 0;
+		}
+		.search-container {
+			max-height: 100vh;
+			height: 100%;
+			border-radius: 0;
+			border: none;
+		}
+		.search-body {
+			max-height: calc(100vh - 110px);
+		}
+		.search-footer {
+			display: none;
+		}
+	}
+</style>
+
+<script define:vars={{ lang }}>
+	// Referencias de elementos DOM
+	const searchModal = document.getElementById('search-modal');
+	const searchBackdrop = document.getElementById('search-backdrop');
+	const searchInput = document.getElementById('search-input');
+	const searchResults = document.getElementById('search-results');
+	const closeSearchBtn = document.getElementById('close-search-btn');
+
+	let searchIndex = null;
+	let selectedIndex = -1;
+
+	// Traducciones en línea
+	const localTranslations = {
+		es: {
+			prompt: 'Escribe para empezar a buscar...',
+			noResults: 'No se encontraron resultados para su búsqueda.',
+		},
+		en: {
+			prompt: 'Type to begin searching...',
+			noResults: 'No results found for your query.',
+		}
+	};
+	const currentTrans = localTranslations[lang] || localTranslations.es;
+
+	// Carga diferida del índice de búsqueda JSON
+	async function loadSearchIndex() {
+		if (searchIndex) return;
+		try {
+			const res = await fetch('/api/search-index.json');
+			if (!res.ok) throw new Error('Error al descargar el índice');
+			const allPosts = await res.json();
+			// Filtrar publicaciones solo del idioma activo
+			searchIndex = allPosts.filter(post => post.lang === lang);
+		} catch (err) {
+			console.error('Error cargando buscador:', err);
+		}
+	}
+
+	function openSearch() {
+		searchModal.classList.add('open');
+		document.body.style.overflow = 'hidden';
+		loadSearchIndex();
+		setTimeout(() => searchInput.focus(), 50);
+	}
+
+	function closeSearch() {
+		searchModal.classList.remove('open');
+		document.body.style.overflow = '';
+		searchInput.value = '';
+		searchResults.innerHTML = `<p class="search-prompt">${currentTrans.prompt}</p>`;
+		selectedIndex = -1;
+	}
+
+	// Ejecuta la búsqueda reactiva
+	function performSearch() {
+		const query = searchInput.value.toLowerCase().trim();
+		selectedIndex = -1;
+
+		if (!query) {
+			searchResults.innerHTML = `<p class="search-prompt">${currentTrans.prompt}</p>`;
+			return;
+		}
+
+		if (!searchIndex) {
+			searchResults.innerHTML = `<p class="search-prompt">Cargando...</p>`;
+			return;
+		}
+
+		const results = searchIndex.filter(post => {
+			const titleMatch = post.title.toLowerCase().includes(query);
+			const descMatch = post.description.toLowerCase().includes(query);
+			const catMatch = post.category.toLowerCase().includes(query);
+			const tagMatch = post.tags.some(tag => tag.toLowerCase().includes(query));
+			return titleMatch || descMatch || catMatch || tagMatch;
+		});
+
+		if (results.length === 0) {
+			searchResults.innerHTML = `<p class="search-no-results">${currentTrans.noResults}</p>`;
+			return;
+		}
+
+		// Renderizado dinámico de tarjetas planas
+		searchResults.innerHTML = results.map((post, idx) => {
+			const tagsHtml = post.tags.map(tag => `<span class="item-tag">#${tag}</span>`).join(' ');
+			return `
+				<a href="${post.path}" class="search-item" data-index="${idx}">
+					<span class="item-title">${post.title}</span>
+					<span class="item-desc">${post.description}</span>
+					<div class="item-meta">
+						<span class="item-cat ${post.category}">${post.category}</span>
+						${tagsHtml}
+					</div>
+				</a>
+			`;
+		}).join('');
+
+		// Reasignar clics para cerrar el modal al entrar a un post
+		const itemLinks = searchResults.querySelectorAll('.search-item');
+		itemLinks.forEach(link => {
+			link.addEventListener('click', () => closeSearch());
+		});
+	}
+
+	// Manejo de la selección de teclado
+	function updateSelection(direction) {
+		const items = searchResults.querySelectorAll('.search-item');
+		if (items.length === 0) return;
+
+		// Quitar clase previa
+		if (selectedIndex >= 0 && selectedIndex < items.length) {
+			items[selectedIndex].classList.remove('selected');
+		}
+
+		if (direction === 'down') {
+			selectedIndex = (selectedIndex + 1) % items.length;
+		} else if (direction === 'up') {
+			selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+		}
+
+		// Añadir clase seleccionada y desplazar
+		if (selectedIndex >= 0 && selectedIndex < items.length) {
+			const activeItem = items[selectedIndex];
+			activeItem.classList.add('selected');
+			activeItem.scrollIntoView({ block: 'nearest' });
+		}
+	}
+
+	// Event Listeners
+	searchInput.addEventListener('input', performSearch);
+
+	// Cerrar al hacer clic fuera (en el fondo oscuro sólido) o en el botón de cerrar
+	searchBackdrop.addEventListener('click', closeSearch);
+	closeSearchBtn.addEventListener('click', closeSearch);
+
+	// Teclas de atajo globales
+	window.addEventListener('keydown', (e) => {
+		// Abre el buscador con Cmd+K o Ctrl+K
+		if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+			e.preventDefault();
+			if (searchModal.classList.contains('open')) {
+				closeSearch();
+			} else {
+				openSearch();
+			}
+		}
+
+		// Controles con el modal abierto
+		if (searchModal.classList.contains('open')) {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				closeSearch();
+			} else if (e.key === 'ArrowDown') {
+				e.preventDefault();
+				updateSelection('down');
+			} else if (e.key === 'ArrowUp') {
+				e.preventDefault();
+				updateSelection('up');
+			} else if (e.key === 'Enter') {
+				e.preventDefault();
+				const items = searchResults.querySelectorAll('.search-item');
+				if (selectedIndex >= 0 && selectedIndex < items.length) {
+					items[selectedIndex].click();
+				} else if (items.length > 0) {
+					// Por defecto abrir el primer resultado si presiona enter directo
+					items[0].click();
+				}
+			}
+		}
+	});
+
+	// Vincular a los botones de cabecera con el atributo data-open-search
+	document.addEventListener('click', (e) => {
+		if (e.target.closest('[data-open-search]')) {
+			e.preventDefault();
+			openSearch();
+		}
+	});
+</script>
