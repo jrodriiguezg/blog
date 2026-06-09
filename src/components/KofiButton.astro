@@ -1,0 +1,43 @@
+---
+// Props opcionales para personalizar el texto
+interface Props {
+  text?: string;
+  username?: string;
+}
+
+const { text = "Support on Ko-fi", username = "jrodriiguezg" } = Astro.props;
+const kofiUrl = `https://ko-fi.com/${username}`;
+---
+
+<a href={kofiUrl} target="_blank" rel="noopener noreferrer" class="kofi-btn">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.051-3.954-1.094-1.465-1.083-3.262 0-4.198 1.116-.916 2.79-.843 3.995.212.352.312.593.636.593.636s.202-.308.514-.6A4.331 4.331 0 0 1 12.87 8.07c1.196-.906 2.87-.978 3.996-.061 1.083.936 1.094 2.733 0 4.198z"/>
+  </svg>
+  {text}
+</a>
+
+<style>
+  /* Estilos aislados mediante Astro */
+  .kofi-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    background-color: var(--glass-bg, #1a1d24);
+    color: var(--text-primary, #f8fafc);
+    border: 1px solid var(--border-color, #2e3340);
+    backdrop-filter: blur(10px);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  /* Efecto hover */
+  .kofi-btn:hover {
+    background-color: var(--bg-tertiary, #232730);
+    border-color: var(--accent-color, #3b82f6);
+    color: var(--accent-color, #3b82f6);
+    transform: translateY(-2px);
+  }
+</style>
