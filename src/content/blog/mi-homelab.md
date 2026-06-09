@@ -506,3 +506,17 @@ Todos los servicios del laboratorio corren de manera aislada utilizando contened
 		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
 	</a>
 </div>
+
+## Links de compra 
+- [SSD 128Gb](https://amzn.to/4vvUcAq)
+- [WD Blue 1Tb](https://amzn.to/4ekjZou)
+- [WD EasyStore 5Tb](https://amzn.to/3SdoV6W)
+- [El Pendrive que uso para todo](https://amzn.to/4uZ1ahp)
+- [Lexar MicroSD 64GB](https://amzn.to/4ohKmjm)
+- [Cable de red Cat 6](https://amzn.to/4g9PDax)
+- [Pasta termica ARTIC MX](https://amzn.to/4omAHIq)
+- [Raspberry Pi 4B](https://amzn.to/4xnNkXQ)
+- [Carcasa M2 Nvme](https://amzn.to/4edJ0BG)
+
+
+Algunos de los enlaces a componentes o herramientas son enlaces de afiliado. Esto significa que recibo una pequeña comisión si realizas una compra, lo cual ayuda a mantener este sitio sin que a ti te cueste más.
