@@ -62,10 +62,11 @@ const l = useTranslatedPath(lang);
 	</nav>
 </header>
 <SearchModal />
+
 <style>
 	header {
 		margin: 0;
-		padding: 0 1em;
+		padding: 0 1.5em;
 		background: var(--header-bg);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
@@ -78,7 +79,8 @@ const l = useTranslatedPath(lang);
 	}
 	h2 {
 		margin: 0;
-		font-size: 1em;
+		font-size: 1.25em;
+		white-space: nowrap;
 	}
 
 	h2 a,
@@ -104,18 +106,32 @@ const l = useTranslatedPath(lang);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		max-width: 960px;
+		margin: 0 auto;
+		width: 100%;
 	}
-	nav a {
+	.internal-links {
+		display: flex;
+		align-items: center;
+		gap: 1.5em;
+	}
+	.internal-links a {
 		padding: 1em 0.5em;
 		color: var(--text-color);
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
+		font-weight: 500;
+		font-size: 0.95em;
 		transition: color 0.3s ease, border-color 0.3s ease;
 	}
-	nav a.active {
-		text-decoration: none;
+	.internal-links a.active {
+		text-decoration: none !important;
 		border-bottom-color: var(--accent);
 		color: var(--title-color);
+		font-weight: 700;
+	}
+	.internal-links a:hover {
+		color: var(--accent);
 	}
 	.right-section {
 		display: flex;
@@ -149,9 +165,43 @@ const l = useTranslatedPath(lang);
 	.social-links a:hover {
 		color: var(--accent);
 	}
+	
 	@media (max-width: 720px) {
+		header {
+			padding: 0 1em;
+		}
+		nav {
+			flex-wrap: wrap;
+			padding: 0.75em 0;
+		}
+		h2 {
+			order: 1;
+			font-size: 1.15em;
+			flex-shrink: 0;
+		}
+		.right-section {
+			order: 2;
+			gap: 0.85em;
+			flex-shrink: 0;
+		}
+		.internal-links {
+			order: 3;
+			width: 100%;
+			justify-content: center;
+			gap: 1.5em;
+			margin-top: 0.75em;
+			padding-top: 0.75em;
+			border-top: 1px solid rgba(var(--gray), 15%);
+		}
+		.internal-links a {
+			padding: 0.5em 0.25em;
+			font-size: 0.9em;
+			border-bottom-width: 3px;
+		}
 		.social-links {
 			display: none;
 		}
 	}
 </style>
+
+

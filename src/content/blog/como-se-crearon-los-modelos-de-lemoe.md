@@ -1,6 +1,6 @@
 ---
-title: "Como se crearon los modelos de Lemoe"
-description: "Cómo se entrenaron y optimizaron los modelos de Inteligencia Artificial para el proyecto LEMoE."
+title: "Cómo entrenar un modelo de IA paso a paso"
+description: "Descubre la ciencia y el código detrás del entrenamiento de modelos de Inteligencia Artificial, usando el proyecto LEMoE como caso práctico."
 pubDate: "2026-06-11"
 heroImage: "/lemoe-models-hero.png"
 category: "divulgacion"
