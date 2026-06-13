@@ -31,7 +31,7 @@ export default defineConfig({
 			prefixDefaultLocale: false,
 		},
 	},
-	site: "https://example.com",
+	site: "https://blog.jrodriiguezg.link",
 	markdown: {
 		remarkPlugins: [remarkMermaid],
 	},
