@@ -1,0 +1,122 @@
+---
+title: "My HomeLab: Spec Sheet & Services"
+description: "A comprehensive detail of the physical infrastructure, local network topology, and interactive self-hosted services catalog."
+pubDate: "May 29 2026"
+heroImage: "/spec-sheet-hero.png"
+category: "homelab"
+tags: ["computing", "docker", "linux", "networking", "services"]
+pinned: true
+---
+import TerminalWindow from '../../../components/TerminalWindow.astro';
+import NodesSpecs from '../../../components/NodesSpecs.astro';
+import InteractiveNetworkDiagram from '../../../components/InteractiveNetworkDiagram.astro';
+import ServicesCatalog from '../../../components/ServicesCatalog.astro';
+
+
+
+# Introduction
+
+As I have mentioned in previous posts, a **HomeLab** does not require thousands of dollars in rack servers or industrial hardware to be robust and highly functional. With a bit of skill, second-hand parts, and stable operating systems, we can build a great infrastructure at home.
+
+This entry serves as a **unified control panel and spec sheet** for my entire lab. Here you will find the detailed hardware specs of each machine, the updated logical network diagram, and an interactive catalog with a built-in search filter to explore the services I have running in real-time.
+
+If you want to see the step-by-step details of how I configured the parts of this network, here are the links to the full series:
+- [**Introduction to my HomeLab - Setup and First Steps**](/en/blog/introduccion-al-homelab/)
+- [**Networking Block I - Domains**](/en/blog/bloque-de-red-I)
+- [**Networking Block II - Services**](/en/blog/bloque-de-red-ii-servicios/)
+- **Management Block I - Administration**
+- **Management Block II - Monitoring**
+- **Services Block**
+- **Tweaks, Backups, and Extras**
+
+---
+
+## Hardware Specifications
+
+Currently, my lab is composed of two main physical nodes. Each serves a different and complementary role: the **Raspberry Pi 4B** acts as the node for essential services and low-power local networking, while the **HP Elitedesk 705 G3** (bought on Wallapop and upgraded with extra storage) handles the services with higher read, write, and multimedia computing demands.
+
+<NodesSpecs lang="en" />
+
+
+---
+
+## Interactive Logical Network Diagram
+
+This logical diagram represents the connections in the lab. All incoming external traffic accesses securely through the **Cloudflared Tunnel** and is routed to the **Nginx Proxy Manager**, which filters and redirects internal requests to the corresponding node and port.
+
+*(You can click and drag to move the diagram, or use your scroll wheel/touchpad pinch gestures to zoom into complex structures)*
+
+<InteractiveNetworkDiagram lang="en">
+
+```mermaid
+flowchart TD
+    %% Define Styles
+    classDef extNode fill:#1a1a24,stroke:#8b5cf6,stroke-width:2px,color:#e9d5ff;
+    classDef proxyNode fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe;
+    classDef rpiNode fill:#1c1917,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef eliteNode fill:#172554,stroke:#3b82f6,stroke-width:2px,color:#dbeafe;
+    classDef vpnNode fill:#1e1b4b,stroke:#ec4899,stroke-width:2px,color:#fce7f3;
+
+    %% WAN
+    subgraph WAN ["External / Internet"]
+        direction TB
+        internet["Public Internet"]:::extNode
+        tunnel["Cloudflared Tunnel"]:::extNode
+        internet --> tunnel
+    end
+
+    %% Reverse Proxy
+    subgraph Proxy ["Reverse Proxy"]
+        npm["Proxy Manager<br>(Nginx Proxy Manager)<br>npm.jrodriiguezg.lan"]:::proxyNode
+    end
+
+    %% Raspberry Pi 4
+    subgraph RPi4 ["Raspberry Pi 4 (Docker Node)"]
+        phns1["phns1.jrodriiguezg.lan<br>(PiHole + Unbound / DNS 1)"]:::rpiNode
+        wireguard["Tailscale / Wireguard<br>wireguard.jrodriiguezg.lan"]:::vpnNode
+    end
+
+    %% HP Elitedesk
+    subgraph HP ["HP Elitedesk (Docker Node)"]
+        phns2["phns2.jrodriiguezg.lan<br>(Secondary DNS 2)"]:::eliteNode
+        navidrome["navidrome.jrodriiguezg.lan<br>(Navidrome / Streaming)"]:::eliteNode
+    end
+
+    %% Flows
+    tunnel --> npm
+    npm -.-> phns1
+    npm -.-> phns2
+    npm -.-> wireguard
+    npm -.-> navidrome
+
+    %% Subgraph Styles
+    style WAN fill:none,stroke:#27272a,stroke-width:1px,color:#a1a1aa;
+    style Proxy fill:none,stroke:#27272a,stroke-width:1px,color:#a1a1aa;
+    style RPi4 fill:none,stroke:#f43f5e,stroke-width:1px,color:#fda4af;
+    style HP fill:none,stroke:#3b82f6,stroke-width:1px,color:#93c5fd;
+```
+
+</InteractiveNetworkDiagram>
+
+---
+
+## Active Catalog of Self-Hosted Services
+
+All services in the lab run isolated using **Docker** containers. Below I show the list of active services, specifying the physical node where they run, their internal/external visibility status, and their corresponding technical descriptions.
+
+<div class="uptime-status-card">
+	<div class="status-card-header">
+		<span class="status-dot-pulse"></span>
+		<h4>Live Status Dashboard</h4>
+	</div>
+	<p>
+		The health, availability, and response times of all my self-hosted services are monitored in real-time using <strong>Uptime Kuma</strong>. Due to standard browser iframe security restrictions, please view the complete dashboard directly in its dedicated window.
+	</p>
+	<a href="https://internal-status.jrodriiguezg.link/status/pb-status" target="_blank" rel="noopener noreferrer" class="status-link-btn">
+		<span>View HomeLab Status</span>
+		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+	</a>
+</div>
+
+<ServicesCatalog />
+

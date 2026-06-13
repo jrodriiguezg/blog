@@ -1,0 +1,78 @@
+---
+// Props para personalizar el titulo de la pestaña
+export interface Props {
+  title?: string;
+}
+
+const { title = "code" } = Astro.props;
+---
+
+<div class="code-window-container">
+  <div class="code-window-header">
+    <div class="code-window-tab">
+      <span class="code-window-title">{title}</span>
+    </div>
+  </div>
+  <div class="code-window-body">
+    <!-- El slot renderiza el bloque de codigo markdown que envuelvas -->
+    <slot />
+  </div>
+</div>
+
+<style>
+  /* Contenedor principal de la ventana de código */
+  .code-window-container {
+    background-color: #1e1e24;
+    border: 1px solid #2d3139;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    margin: 1.5rem 0;
+    overflow: hidden;
+  }
+
+  /* Barra de titulo superior (estilo pestaña de editor) */
+  .code-window-header {
+    background-color: #16181d;
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 1px solid #2d3139;
+    height: 38px;
+    padding-left: 0.75rem;
+  }
+
+  /* Pestaña activa (Tab) */
+  .code-window-tab {
+    background-color: #1e1e24;
+    border-left: 1px solid #2d3139;
+    border-right: 1px solid #2d3139;
+    border-top: 2px solid #38bdf8; /* Línea azul de pestaña activa */
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 0 1.25rem;
+    display: flex;
+    align-items: center;
+    height: calc(100% + 1px);
+    margin-bottom: -1px;
+  }
+
+  /* Texto del titulo (nombre del archivo) */
+  .code-window-title {
+    color: #abb2bf;
+    font-family: monospace;
+    font-size: 0.85rem;
+    user-select: none;
+  }
+
+  /* Area donde se inyecta el codigo */
+  .code-window-body {
+    padding: 1.25rem;
+    background-color: #1e1e24;
+  }
+
+  /* Ajustar los bloques <pre> generados por Astro para que encajen */
+  .code-window-body :global(pre) {
+    margin: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+</style>

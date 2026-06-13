@@ -1,0 +1,137 @@
+---
+interface Props {
+  lang?: 'es' | 'en';
+}
+
+const { lang = 'es' } = Astro.props;
+---
+
+<div class="nodes-specs">
+  <div class="node-spec-card">
+    <h3 class="node-title">Raspberry Pi 4B (4GB)</h3>
+    <p class="node-role">{lang === 'es' ? 'Servicios esenciales y DNS primario' : 'Essential Services & Primary DNS'}</p>
+    <hr class="flat-divider" />
+    <table class="specs-table">
+      <tr>
+        <td><strong>CPU</strong></td>
+        <td>Broadcom BCM2711 4 x {lang === 'es' ? '1,50Ghz' : '1.50Ghz'} (ARM)</td>
+      </tr>
+      <tr>
+        <td><strong>RAM</strong></td>
+        <td>4GB LPDDR4-3200</td>
+      </tr>
+      <tr>
+        <td><strong>{lang === 'es' ? 'S.O.' : 'O.S.'}</strong></td>
+        <td>Debian 12 Bookworm (RaspberryPiOS Lite)</td>
+      </tr>
+      <tr>
+        <td><strong>{lang === 'es' ? 'Almacenamiento' : 'Storage'}</strong></td>
+        <td>{lang === 'es' ? 'MicroSD Lexar 64GB (SO y configuración)' : 'Lexar 64GB MicroSD (OS & configurations)'}</td>
+      </tr>
+      <tr>
+        <td><strong>{lang === 'es' ? 'Consumo medio' : 'Average Draw'}</strong></td>
+        <td>{lang === 'es' ? '~4W (Perfecto para 24/7 ininterrumpido)' : '~4W (Perfect for 24/7 uninterrupted uptime)'}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="node-spec-card">
+    <h3 class="node-title">HP Elitedesk 705 G3</h3>
+    <p class="node-role">{lang === 'es' ? 'Cargas de trabajo intensivas y multimedia' : 'Intensive workloads & Multimedia'}</p>
+    <hr class="flat-divider" />
+    <table class="specs-table">
+      <tr>
+        <td><strong>CPU</strong></td>
+        <td>AMD PRO A10-8770E 4 x {lang === 'es' ? '3,08Ghz' : '3.08Ghz'} (x86_64)</td>
+      </tr>
+      <tr>
+        <td><strong>RAM</strong></td>
+        <td>16GB DDR4-SODIMM</td>
+      </tr>
+      <tr>
+        <td><strong>{lang === 'es' ? 'S.O.' : 'O.S.'}</strong></td>
+        <td>Debian 12 Bookworm (Stable Netinst)</td>
+      </tr>
+      <tr>
+        <td><strong>{lang === 'es' ? 'Almacenamiento' : 'Storage'}</strong></td>
+        <td>
+          {lang === 'es' ? (
+            <>
+              Kingston SSD 128GB (Sistema Operativo)<br/>
+              WD Blue NVMe 1TB (Películas y series)<br/>
+              Aliexpress NVMe 512GB (Navidrome / Música)<br/>
+              WD easystore 5TB (Almacén de Backups)
+            </>
+          ) : (
+            <>
+              Kingston SSD 128GB (Operating System)<br/>
+              WD Blue NVMe 1TB (Movies & series)<br/>
+              Aliexpress NVMe 512GB (Navidrome / Music)<br/>
+              WD easystore 5TB (Backup Repository)
+            </>
+          )}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>{lang === 'es' ? 'Consumo medio' : 'Average Draw'}</strong></td>
+        <td>{lang === 'es' ? '~15W - 25W (Excelente balance rendimiento/costo)' : '~15W - 25W (Excellent price-to-performance balance)'}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<style>
+  .nodes-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .node-spec-card {
+    background: #09090b;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  .node-title {
+    margin-top: 0 !important;
+    margin-bottom: 0.25rem !important;
+    color: #f4f4f5 !important;
+    font-size: 1.3rem !important;
+  }
+  .node-role {
+    color: #71717a;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .flat-divider {
+    border: 0;
+    height: 1px;
+    background: #27272a;
+    margin: 1rem 0;
+  }
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .specs-table td {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(39, 39, 42, 0.5);
+    vertical-align: top;
+    color: #e4e4e7;
+  }
+  .specs-table tr:last-child td {
+    border-bottom: none;
+  }
+  .specs-table td:first-child {
+    width: 35%;
+    color: #a1a1aa;
+  }
+  @media (max-width: 768px) {
+    .nodes-specs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

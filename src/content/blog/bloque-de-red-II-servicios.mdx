@@ -6,6 +6,9 @@ heroImage: "/network-services-hero.png"
 category: "homelab"
 tags: ["informatica", "docker", "linux", "redes"]
 ---
+import TerminalWindow from '../../components/TerminalWindow.astro';
+
+
 ## Introducción
 Bueno, esto es una continuación de mi anterior post en el que explicaba cómo está configurado el bloque de red de cara a *Internet*, dejando como punto y aparte el servicio *cloudflared*, que es el conector entre mi infraestructura local y los servidores de *Cloudflare* que dan al exterior (*Internet*).
 
@@ -69,12 +72,13 @@ Si esta es vuestra primera vez leyendo este blog, os invito a ver el resto de en
 - [**Introducción a mi HomeLab - Puesta en marcha y primeros pasos**](/blog/introduccion-al-homelab/)
 - [**Bloque de Red I - Dominios**](/blog/bloque-de-red-I)
 - [**Bloque de Red II - Servicios**](/blog/bloque-de-red-ii-servicios/)
-- **Bloque de Gestión I - Administración**
+- [**Bloque de Gestión I - Administración**](/blog/bloque-de-gestion-I-administracion/)
 - **Bloque de Gestión II - Monitorización**
 - **Bloque de Servicios**
 - **Retoques, copias de seguridad y extras**
 
 > Los *compose* que publique aquí estarán adaptados para desplegarse de manera independiente sin estar en el mismo *stack* de red
+
 
 ## Nginx Proxy Manager
 Este es el segundo servicio si seguimos el orden de más externos a más internos, y también es de vital importancia para no depender ni recordar todos los puertos de todos los servicios (también actúa como filtro de las solicitudes del exterior).
@@ -101,20 +105,83 @@ mkdir docker/npm && mkdir -p docker/npm/{data,letsencrypt}
 #### Docker Compose
 Todos los archivos usados en los despliegues se encuentran unificados, tanto los archivos adaptados como los originales que usé yo; aunque aquí están de igual manera, pero con la explicación:
 ```yaml
-nginx-proxy-manager: 
+services:
+  npm: 
     image: jc21/nginx-proxy-manager:latest # Imagen de despliegue
-    container_name: nginx-proxy-manager # Nombre del contenedor
+    container_name: npm # Nombre del contenedor
     restart: unless-stopped # Esto indica que el contenedor siempre vuelva a iniciar a no ser que esté detenido
-    network_mode: "host" # Usamos la red en modo host, para no tener que mapear puertos
+    ports:
+      - "80:80"   # Trafico HTTP entrante
+      - "443:443" # Trafico HTTPS entrante
+      - "81:81"   # Panel de administracion web
+    environment:
+      - DISABLE_IPV6=true
+    dns:
+      - 1.1.1.1 # DNS de Cloudflare
+      - 8.8.8.8 # DNS de Google
     volumes:
-      - ./docker/npm/data:/data # Mapeamos la carpeta data a la carpeta que hemos creado antes
-      - ./docker/npm/letsencrypt:/letsencrypt # Mapeamos la carpeta letsencrypt a la carpeta que hemos creado antes
+      - ~/docker/npm/data:/data # Mapeamos la carpeta data a la carpeta que hemos creado antes
+      - ~/docker/npm/letsencrypt:/etc/letsencrypt # Mapeamos la carpeta letsencrypt a la carpeta que hemos creado antes
 ```
 
-Este es el contenido del fichero **docker-compose.yaml**. Una vez lo tengamos, solo deberemos ejecutar el comando `docker compose up -d` y con `docker ps` podemos ver si ha arrancado.
+El contenido del documento anterior lo debemos almacenar en una archivo llamado `docker-compose.yaml` o `compose.yaml` yo lo he almacenado en la carpeta *npm* dentro de *docker*
+y ejecutamos el comando para levantarlo, 
+<TerminalWindow title="jrodriiguezg@blogvm:~/docker/npm">
+  ```text
+  jrodriiguezg@blogvm:~/docker/npm$ docker compose up -d  
+  [+] up 34/34
+   ✔ Image jc21/nginx-proxy-manager:latest Pulled                                                        22.0s
+   ✔ Container npm                        Started                                                        0.2s
+  jrodriiguezg@blogvm:~/docker/npm$
+  ```
+</TerminalWindow>
+En algunos sistemas linux, os puede salir un error como el siguiente: 
+```
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint npm 
+(338e9bf2d678e9d61c2d2b7e80295c6df49c21629a35e596f817e5e93bc10182): error while calling RootlessKit PortManager.AddPort(): cannot expose privileged port 80, you can add 'net.ipv4.ip_unprivileged_port_start=80' to /etc/sysctl.conf (currently 1024), 
+or set CAP_NET_BIND_SERVICE on rootlesskit binary, or choose a larger port number (>= 1024): listen tcp4 0.0.0.0:80: bind: permission denied
+```
+Esto es debido a que algunas instalaciones de docker (rootless), bloquean el uso de puertos por debajo del 1024, no entremos en panico se arregla tan simple como: 
+```bash
+ sudo nano /etc/sysctl.d/99-rootless-ports.conf
+```
+
+Y agregamos la siguiente linea: 
+```bash
+net.ipv4.ip_unprivileged_port_start=20
+```
+
+Despues aplicamos los cambios con: 
+```bash 
+sudo sysctl --system
+```
 
 #### Configuraciones y uso
+Si todos los pasos anteriores han salido bien, deberiamos ver algo como lo siguiente: 
+<img src="https://assets.jrodriiguezg.link/bloque_serviciosII/NPM_1.png" alt="phns1" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
 
+Aqui solamente debemos rellenar con nuestros datos y pulsar en *Save*
+
+<img src="https://assets.jrodriiguezg.link/bloque_serviciosII/npm_2.png" alt="phns1" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+
+Para finalmente acceder a la consola de **Nginx Proxy Manager**, aqui os voy a enseñar como agregar un *host proxy*, si desplegais el siguiente servicio os animo a explorar el resto de sus funciones
+<img src="https://assets.jrodriiguezg.link/bloque_serviciosII/npm_3.png" alt="phns1" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+
+Para agregar un *Proxy host*, debemos pulsar en donde dice *Proxy host* (por si habia dudas).
+
+Se nos abrira la siguiente ventana donde pulsaremos en **Add Proxy Host**
+<img src="https://assets.jrodriiguezg.link/bloque_serviciosII/NPM_4.png" alt="phns1" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+
+Yo como tal no he agregado nada, ya que esta instalacion solo es para enseñar todo en una instalacion limpia y ahora mismo no dispongo de un dominio para esto, pero os explico que se debe poner en cada lugar.
+<img src="https://assets.jrodriiguezg.link/bloque_serviciosII/NPM_5.png" alt="phns1" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+
+1. *Domain Names*: Aqui va el dominio o subdominio que vayamos a usa, nginx escuchas las peticiones entrantes y compara si coinciden con el valor aqui definido.
+2. *Scheme*: Indicamos el tipo de protocolo que se usa en el servicio INTERNO (normalmente HTTP); *Forward Hostname / IP*: Direccion donde se aloja el servicio final; *Forward Port*: Puerto en el que responde el servicio
+3. *Access List*: Aqui podemos configurar el control de acceso hacia ese dominio, podemos solicitar usuario/contraseña o permitir ciertas IPs.
+4. *Cache Assets*: Le dice a Nginx que almacene en cache recursos estaticos, acelerando la carga y reduciendo el esfuerzo del servidor final.
+5. *Block Common Exploits*: Son un conjunto de reglas de seguridad preventivas a nivel de servidor web para bloquear patrones de ataques comunes (como inyecciones SQL o exploits conocidos). Es una capa de protección básica que se recomienda dejar siempre activa.
+6. *Websockets Support*: Permite el paso de tráfico de WebSockets, necesario para conexiones persistentes y bidireccionales en tiempo real.
+7. *Save*: Guardar la configuracion.
 
 ## Pi-hole y Unbound
 Estos dos servicios son los terceros más importantes, sobre todo a nivel de resolución interna de la red; porque sin ellos (sobre todo Pi-hole), ya que se encarga de resolver los dominios que hay indicados en el NPM.
@@ -166,20 +233,19 @@ Es un servidor que actúa como intermediario encargado de buscar la dirección I
 #### Despliegue de Pi-hole y Unbound
 Estos servicios pueden ser desplegados por separado, pero ya que en mi caso van juntos, el *compose* desplegará ambos. El mapeo de carpetas de estos servicios no es necesario, ya que no se suelen tocar mucho sus ficheros; pero si quisiéramos mapear, lo haríamos como en el servicio anterior dentro de una carpeta **docker**:
 ```bash 
-mkdir docker/pihole && mkdir -p docker/pihole/{unbound,etc,dnsmasq.d}
+mkdir ~/docker/pihole && mkdir -p ~/docker/pihole/{unbound,etc,dnsmasq.d}
 ```
 #### Docker Compose
 ```yaml
 version: '3.8'
-
 services:
   unbound:
-    image: mvance/unbound-rpi:latest
+    image: mvance/unbound:latest
     container_name: unbound
     restart: unless-stopped
     network_mode: host
     volumes:
-      - /pihole/unbound:/opt/unbound/etc/unbound
+      - ~/docker/pihole/unbound:/opt/unbound/etc/unbound
 
   pihole:
     image: pihole/pihole:latest
@@ -189,22 +255,37 @@ services:
     depends_on:
       - unbound
     environment:
-      TZ: Europe/Madrid
-      WEBPASSWORD: "CLAVE_SEGURA" # Cambiar esto por la contraseña
-      PIHOLE_DNS_: "127.0.0.1#5335" # Apuntamos a unbound aquí
-      DNSSEC: "true"
-      DNSMASQ_LISTENING: "all"
-      WEB_PORT: "8080"
+      - TZ=Europe/Madrid
+      - FTLCONF_webserver_port=8080
+      - FTLCONF_webserver_tls_port=8443
+      - WEBPASSWORD=tu_contraseña_segura
+    ports:
+      - "53:53/tcp" # DNS
+      - "53:53/udp" # DNS
+      - "8080:8080" # Web 
     volumes:
-      - /etc:/etc/pihole
-      - /dnsmasq:/etc/dnsmasq.d
+      - ~/docker/pihole/etc:/etc/pihole
+      - ~/docker/pihole/dnsmasq:/etc/dnsmasq.d
     cap_add:
       - NET_ADMIN
 ```
+Igual que anteriormente ponemos el anterior `compose` en un fichero denominado `docker-compose.yaml` o `compose.yaml`
+
+<TerminalWindow title="jrodriiguezg@blogvm:~/docker/pihole">
+  ```text
+jrodriiguezg@blogvm:~/docker/pihole$ docker compose up -d  
+[+] up 10/10
+ ✔ Image mvance/unbound:latest Pulled                                                                                                                                                                                                   6.6s
+ ✔ Container unbound           Started                                                                                                                                                                                                  0.2s
+ ✔ Container pihole            Running                                                                                                                                                                                                  0.0s 
+
+  ```
+</TerminalWindow>
+
 #### Configuraciones
 La única configuración aquí, que en verdad es opcional pero nos asegura que todo funcione mejor, sería bajar el fichero **root.hints**, que guarda la ubicación de los servidores **root**:
 ```bash 
-sudo wget https://www.internic.net/domain/named.root -O /pihole/unbound/root.hints
+sudo wget https://www.internic.net/domain/named.root -O ~/docker/pihole/unbound/root.hints
 ```
 
 Para comprobar que todo funciona, podemos hacer un `dig` al puerto en el que está *unbound* para ver si resuelve, o al puerto en el que está *Pi-hole*:
@@ -216,6 +297,16 @@ dig @127.0.0.1 -p 5335 jrodriiguezg.link
 dig @127.0.0.1 -p 53 jrodriiguezg.link
 ```
 *(Hacer esto desde el servidor donde se alojan estos servicios, no desde el cliente).*
+
+Si todo ha salido bien al acceder a la url `http://IP_LOCAL:8080/admin`, debemos ver algo como lo siguiente, aqui iniciamos sesion con la contraseña que hemos definido en el nuestro docker compose
+<img src="https://assets.jrodriiguezg.link/bloque_serviciosII/ph_1.png" alt="phns1-dns" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+> Si no poneis contraseña y se os olvida seguramente sea esta: *tu_contraseña_segura*
+
+Finalmente accedemos al panel de pihole, 
+<img src="https://assets.jrodriiguezg.link/bloque_serviciosII/ph_2.png" alt="phns1-dns" width="700" style="max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 12px; box-shadow: var(--box-shadow);" />
+
+Como anteriormente se ha hecho un tour por la interfaz, nos saltamos ahora repetir pasos, lo mejor para aprender es que uno mismo investigue el sistema.
+
 
 #### Replicación (phns2)
 Yo dispongo de un segundo servidor *Pi-hole* en un host diferente para que, si el primero deja de responder, el segundo le coja el relevo. Esto lo he hecho con una herramienta que clona la base de datos automáticamente mediante *cron*; la herramienta es la siguiente: [Gravity Sync](https://github.com/vmstan/gravity-sync).
@@ -244,7 +335,7 @@ services:
       PORT: 51821
       WG_PORT: 51820 # Este puerto se debe abrir en el router
     volumes:
-      - /docker/wireguard:/etc/wireguard
+      - ~/docker/wireguard/etc:/etc/wireguard
       - /lib/modules:/lib/modules:ro 
     cap_add:
       - NET_ADMIN

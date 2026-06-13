@@ -6,6 +6,10 @@ heroImage: "/lemoe-models-hero.png"
 category: "divulgacion"
 tags: ["AI", "Machine Learning", "NLP", "LEMoE", "Transformers"]
 ---
+import TerminalWindow from '../../components/TerminalWindow.astro';
+import CodeBlockWindow from '../../components/CodeBlockWindow.astro';
+
+
 
 # Introducción
 
@@ -63,11 +67,13 @@ En un archivo JSONL, cada línea de texto es un objeto de JSON independiente. Es
 
 Un ejemplo de nuestro dataset se ve así:
 
+<CodeBlockWindow title="dataset.jsonl">
 ```json
 {"text": "Enséñame la factura de Iberdrola", "label": "1"}
 {"text": "¿Va a llover mañana en Madrid?", "label": "0"}
 {"text": "Muéstrame la factura con el proveedor de internet", "label": "1"}
 ```
+</CodeBlockWindow>
 
 Este dataset busca filtrar la intención de entrada del usuario para saber si está solicitando al sistema que le busque un documento o no. Por ello se ha entrenado con pares de números, **0** o **1**, donde `0` es que no es búsqueda de documento y `1` es que sí.
 
@@ -207,6 +213,7 @@ Cuando el modelo ha visto todo el dataset completo una vez, decimos que ha compl
 
 En el código real, gracias a la librería `transformers` de **HuggingFace**, toda esta complejidad matemática monumental se resume en unas pocas líneas de código.
 
+<CodeBlockWindow title="train.py">
 ```python
 from transformers import Trainer, TrainingArguments
 
@@ -229,6 +236,7 @@ trainer = Trainer(
 # ¡Iniciamos el motor y los cálculos matemáticos masivos!
 trainer.train()
 ```
+</CodeBlockWindow>
 
 Parece fácil, ¿verdad? Pero la ejecución requiere **fuerza bruta computacional**.
 
@@ -270,6 +278,7 @@ PyTorch es fantástico para entrenar porque es un entorno dinámico. El grafo co
 
 El primer paso es exportar el modelo a **ONNX** (Open Neural Network Exchange). Al exportarlo a ONNX, tomamos la red neuronal dinámica y la "horneamos" en un grafo matemático completamente estático. El ordenador ahora tiene un mapa precalculado exacto de las operaciones que debe realizar, sin tener que pensar en cómo construirlas. Solo este paso ya acelera drásticamente el modelo.
 
+<CodeBlockWindow title="export_onnx.py">
 ```python
 from optimum.onnxruntime import ORTModelForSequenceClassification
 
@@ -280,6 +289,7 @@ ort_model = ORTModelForSequenceClassification.from_pretrained(
 )
 ort_model.save_pretrained("./modelo_onnx")
 ```
+</CodeBlockWindow>
 
 ### 6.2. Cuantización INT8: Aplastando la Red Neuronal
 
@@ -291,6 +301,7 @@ La técnica definitiva que utilicé para LEMoE es la **Cuantización a INT8**.
 
 Esencialmente, estamos comprimiendo la "resolución" matemática del cerebro de la IA.
 
+<CodeBlockWindow title="quant.py">
 ```python
 from optimum.onnxruntime.configuration import AutoQuantizationConfig
 from optimum.onnxruntime import ORTQuantizer
@@ -308,7 +319,7 @@ quantizer.quantize(
     quantization_config=qconfig           # Pasamos las reglas matemáticas definidas
 )
 ```
-
+</CodeBlockWindow>
 **Los resultados de esta cuantización son brutales:**
 1.  **Tamaño del archivo:** El peso del modelo se divide por cuatro. Pasamos de
 un archivo de 400 MB a uno de apenas 100 MB.
@@ -399,6 +410,7 @@ Existen múltiples frameworks de inferencia optimizada, siendo TensorRT de NVIDI
 
 Para ilustrar de forma práctica cómo se ve esto en la pantalla de un ingeniero de Machine Learning, aquí expongo un volcado simplificado de lo que la consola arroja durante un proceso de entrenamiento de 5 épocas, observando la convergencia de la función de Loss.
 
+<TerminalWindow title="train.py">
 ```text
 =========================================================================================
 [INFO] Loading dccuchile/bert-base-spanish-wwm-cased
@@ -446,7 +458,7 @@ Step 1500 / 1500 | Loss: 0.0710 | Learning Rate: 0.00e+0 | Time: 00:32:15
 [INFO] Saving model to ./lemoeppc_1
 =========================================================================================
 ```
-
+</TerminalWindow>
 Observa cómo el valor `Loss` (Pérdida) comienza alto (2.14) y va descendiendo a medida que el modelo ajusta sus parámetros y aprende de sus errores. Simultáneamente, las métricas de Validación (Evaluación en datos no vistos) como el `Accuracy` aumentan del 81% inicial a un impresionante 96.8% al final.
 
 Es imperativo notar que en la Época 5, el Loss de entrenamiento siguió bajando a `0.0710`, pero el Loss de Validación se quedó estancado o ligeramente subió en comparación a la Época 4. Esto es un ligero indicio temprano de **Overfitting** (sobreajuste), razón por la cual los sistemas modernos de entrenamiento guardan el punto de control (*Checkpoint*) de la Época 4 como el modelo definitivo a utilizar en producción.

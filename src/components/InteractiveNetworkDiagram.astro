@@ -1,0 +1,171 @@
+---
+interface Props {
+  lang?: 'es' | 'en';
+}
+
+const { lang = 'es' } = Astro.props;
+---
+
+<div class="interactive-diagram-wrapper" id="mermaid-interactive-container">
+  <div class="diagram-controls">
+    <button id="btn-zoom-in" title={lang === 'es' ? 'Acercar' : 'Zoom In'}>＋</button>
+    <button id="btn-zoom-out" title={lang === 'es' ? 'Alejar' : 'Zoom Out'}>－</button>
+    <button id="btn-zoom-reset" title={lang === 'es' ? 'Restaurar escala' : 'Reset Zoom'}>⊙</button>
+  </div>
+  <div class="diagram-pan-viewport" id="diagram-pan-viewport">
+    <div class="mermaid-diagram-content" id="mermaid-diagram-content">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .interactive-diagram-wrapper {
+    position: relative;
+    border: 1px solid #27272a;
+    background: #040405;
+    border-radius: 12px;
+    height: 480px;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .diagram-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+  }
+  .diagram-controls button {
+    background: #09090b;
+    border: 1px solid #27272a;
+    color: #a1a1aa;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .diagram-controls button:hover {
+    border-color: var(--accent);
+    color: #f4f4f5;
+    background: #18181b;
+  }
+  .diagram-pan-viewport {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .diagram-pan-viewport:active {
+    cursor: grabbing;
+  }
+  .mermaid-diagram-content {
+    transform-origin: center center;
+    transition: transform 0.05s ease-out;
+    user-select: none;
+    pointer-events: none;
+  }
+  .mermaid-diagram-content :global(svg) {
+    max-width: 100%;
+    height: auto !important;
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const viewport = document.getElementById('diagram-pan-viewport');
+    const content = document.getElementById('mermaid-diagram-content');
+    
+    if (!viewport || !content) return;
+
+    let scale = 1.6;
+    let panX = 0;
+    let panY = 0;
+    let isDragging = false;
+    let startX, startY;
+
+    function updateTransform() {
+      content.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    }
+
+    updateTransform();
+
+    viewport.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      viewport.style.cursor = 'grabbing';
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      if (viewport) viewport.style.cursor = 'grab';
+    });
+
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = 0.1;
+      if (e.deltaY < 0) {
+        scale = Math.min(scale + zoomFactor, 6.0);
+      } else {
+        scale = Math.max(scale - zoomFactor, 0.25);
+      }
+      updateTransform();
+    }, { passive: false });
+
+    viewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        startX = e.touches[0].clientX - panX;
+        startY = e.touches[0].clientY - panY;
+      }
+    });
+
+    viewport.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches.length === 1) {
+        panX = e.touches[0].clientX - startX;
+        panY = e.touches[0].clientY - startY;
+        updateTransform();
+      }
+    });
+
+    viewport.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+      scale = Math.min(scale + 0.3, 6.0);
+      updateTransform();
+    });
+
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+      scale = Math.max(scale - 0.3, 0.25);
+      updateTransform();
+    });
+
+    document.getElementById('btn-zoom-reset').addEventListener('click', () => {
+      scale = 1.6;
+      panX = 0;
+      panY = 0;
+      updateTransform();
+    });
+  });
+</script>

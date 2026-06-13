@@ -1,0 +1,275 @@
+---
+// ServicesCatalog.astro
+---
+
+<div class="services-catalog">
+  <div class="catalog-header">
+    <input type="text" id="services-search" placeholder="Search by name, description, or tag (e.g. DNS, Media)..." autocomplete="off" />
+    <div class="catalog-filters" id="catalog-filters">
+      <button class="filter-tab active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="dns">DNS</button>
+      <button class="filter-tab" data-filter="media">Multimedia</button>
+      <button class="filter-tab" data-filter="management">Management</button>
+      <button class="filter-tab" data-filter="vpn">VPN</button>
+    </div>
+  </div>
+  <div class="services-grid" id="services-grid">
+    <!-- Dynamic services injection via JavaScript -->
+  </div>
+</div>
+
+<style>
+  .services-catalog {
+    margin: 2.5rem 0;
+  }
+  .catalog-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  #services-search {
+    background: #09090b;
+    border: 1px solid #27272a;
+    color: #f4f4f5;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  #services-search:focus {
+    border-color: var(--accent);
+  }
+  .catalog-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .filter-tab {
+    background: transparent;
+    border: 1px solid #27272a;
+    color: #a1a1aa;
+    border-radius: 8px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .filter-tab:hover {
+    border-color: #3f3f46;
+    color: #f4f4f5;
+  }
+  .filter-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .service-card {
+    background: #09090b;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .service-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .service-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  .service-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #f4f4f5;
+    margin: 0;
+  }
+  .status-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background: rgba(16, 185, 129, 15%);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 30%);
+  }
+  .service-desc {
+    font-size: 0.875rem;
+    color: #a1a1aa;
+    line-height: 1.4;
+    margin: 0 0 1.25rem 0;
+    flex-grow: 1;
+  }
+  .service-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .meta-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: rgba(39, 39, 42, 0.4);
+    color: #e4e4e7;
+    border: 1px solid #27272a;
+  }
+  .meta-badge.tag {
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb, 53, 67, 235), 0.3);
+  }
+  .meta-badge.host {
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.3);
+  }
+  .meta-badge.host.rpi {
+    color: #f43f5e;
+    border-color: rgba(244, 63, 94, 0.3);
+  }
+  .meta-badge.visibility {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+  .meta-badge.visibility.private {
+    color: #fb923c;
+    border-color: rgba(251, 146, 60, 0.3);
+  }
+</style>
+
+<script is:inline>
+  // Local self-hosted services database
+  const servicesList = [
+    {
+      name: "PiHole + Unbound (DNS 1)",
+      category: "dns",
+      host: "Raspberry Pi 4",
+      hostClass: "rpi",
+      description: "Primary local DNS server and network-wide ad blocker, integrated directly with Unbound upstream resolver.",
+      visibility: "Private (LAN)",
+      visibilityClass: "private"
+    },
+    {
+      name: "Secondary DNS",
+      category: "dns",
+      host: "HP Elitedesk",
+      hostClass: "hp",
+      description: "Redundant secondary DNS server configured to preserve local navigation in case of node failure or maintenance.",
+      visibility: "Private (LAN)",
+      visibilityClass: "private"
+    },
+    {
+      name: "Nginx Proxy Manager",
+      category: "management",
+      host: "Raspberry Pi 4",
+      hostClass: "rpi",
+      description: "Graphical reverse proxy managing automated Let's Encrypt SSL certificates and routing incoming WAN traffic.",
+      visibility: "Hybrid (Public/LAN)",
+      visibilityClass: "public"
+    },
+    {
+      name: "Tailscale VPN",
+      category: "vpn",
+      host: "Raspberry Pi 4",
+      hostClass: "rpi",
+      description: "Secure, encrypted remote mesh VPN connectivity to manage the lab environment safely from outside the intranet.",
+      visibility: "Private (VPN)",
+      visibilityClass: "private"
+    },
+    {
+      name: "Navidrome",
+      category: "media",
+      host: "HP Elitedesk",
+      hostClass: "hp",
+      description: "Lightweight Subsonic-compatible music streaming server. Hosts my entire high-speed music library on NVMe storage.",
+      visibility: "Public (WAN)",
+      visibilityClass: "public"
+    },
+    {
+      name: "Cloudflared Tunnel",
+      category: "management",
+      host: "Raspberry Pi 4",
+      hostClass: "rpi",
+      description: "Secure encrypted tunnel that exposes selected local services (e.g. Navidrome) over the Cloudflare edge network without port forwarding.",
+      visibility: "Public (WAN)",
+      visibilityClass: "public"
+    }
+  ];
+
+  // Interactive search and filtering logic
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('services-search');
+    const grid = document.getElementById('services-grid');
+    const filterTabs = document.querySelectorAll('.filter-tab');
+
+    if (!searchInput || !grid) return;
+
+    let activeFilter = 'all';
+
+    function renderServices() {
+      const query = searchInput.value.toLowerCase().trim();
+      
+      const filtered = servicesList.filter(service => {
+        const matchesFilter = activeFilter === 'all' || service.category === activeFilter;
+        
+        const matchesSearch = service.name.toLowerCase().includes(query) ||
+                              service.description.toLowerCase().includes(query) ||
+                              service.category.toLowerCase().includes(query) ||
+                              service.host.toLowerCase().includes(query);
+        
+        return matchesFilter && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #71717a; padding: 2rem; font-style: italic;">No services found matching your search criteria.</p>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(service => {
+        return `
+          <div class="service-card">
+            <div class="service-title-row">
+              <h4 class="service-title">${service.name}</h4>
+              <span class="status-badge">Active</span>
+            </div>
+            <p class="service-desc">${service.description}</p>
+            <div class="service-meta-row">
+              <span class="meta-badge tag">${service.category.toUpperCase()}</span>
+              <span class="meta-badge host ${service.hostClass}">${service.host}</span>
+              <span class="meta-badge visibility ${service.visibilityClass}">${service.visibility}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    searchInput.addEventListener('input', renderServices);
+
+    filterTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        filterTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        activeFilter = tab.getAttribute('data-filter');
+        renderServices();
+      });
+    });
+
+    renderServices();
+  });
+</script>
