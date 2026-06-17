@@ -211,6 +211,7 @@ Just as when installing Windows, the image you downloaded from the internet is a
 Open the "Software Update" app or the Software Store of your distribution and click check for updates. If you want to start getting familiar with the terminal (the fastest and most powerful tool in Linux), you can open your desktop's console app and enter the command corresponding to your distribution family:
 
 <TerminalWindow title="Bash - System Updates">
+```bash
 # If you installed Ubuntu, Linux Mint, Debian, or Zorin OS
 sudo apt update && sudo apt upgrade -y
 
@@ -219,6 +220,7 @@ sudo dnf upgrade --refresh
 
 # If you installed Arch Linux or derivatives (like Manjaro)
 sudo pacman -Syu
+```
 </TerminalWindow>
 
 *Quick explanation of the commands:*
@@ -278,6 +280,7 @@ While Snap is a perfectly valid option and works well for many applications, the
 While most users will install everything graphically through their software store, learning to install software from the console will save you a lot of time in your daily routine:
 
 <TerminalWindow title="Terminal - Software Management">
+```bash
 # Install the VLC media player from Fedora's native repositories
 sudo dnf install vlc
 
@@ -286,6 +289,7 @@ flatpak install flathub com.discordapp.Discord
 
 # Search for programs in your system's repositories
 apt search gimp
+```
 </TerminalWindow>
 
 ---
@@ -378,6 +382,7 @@ Learning the basic use of the terminal will show you that performing certain tas
 To help you get familiar with it and lose your fear, I have prepared a list of essential survival commands that every beginner Linux user should know:
 
 <CodeBlockWindow language="bash" title="Essential Survival Commands">
+```bash
 # ======== SYSTEM NAVIGATION ========
 
 # pwd (Print Working Directory): Shows which folder/path you are currently in
@@ -423,6 +428,7 @@ free -m
 
 # htop: Shows real-time CPU and RAM consumption, along with the process manager
 htop
+```
 </CodeBlockWindow>
 
 ### Terminal Ninja Tricks to Save Time:

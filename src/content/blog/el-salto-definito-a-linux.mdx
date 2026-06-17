@@ -209,6 +209,7 @@ Al igual que ocurre al instalar Windows, la imagen que has descargado de interne
 Abre la aplicación de "Actualización de Software" o la Tienda de Software de tu distribución y haz clic en buscar actualizaciones. Si quieres empezar a familiarizarte con la terminal (la herramienta más rápida y potente de Linux), puedes abrir la aplicación de consola de tu escritorio e introducir el comando correspondiente a la familia de tu distribución:
 
 <TerminalWindow title="Bash - Actualizaciones del Sistema">
+```bash
 # Si has instalado Ubuntu, Linux Mint, Debian o Zorin OS
 sudo apt update && sudo apt upgrade -y
 
@@ -217,6 +218,7 @@ sudo dnf upgrade --refresh
 
 # Si has instalado Arch Linux o derivadas (como Manjaro)
 sudo pacman -Syu
+```
 </TerminalWindow>
 
 *Explicación rápida de los comandos:*
@@ -279,14 +281,16 @@ En la práctica, ambos sistemas coexisten y cumplen bien su función. No te preo
 Si bien la mayoría de los usuarios instalarán todo de forma gráfica a través de su tienda de aplicaciones, aprender a instalar software desde la consola te ahorrará mucho tiempo en tu día a día:
 
 <TerminalWindow title="Terminal - Gestión de Aplicaciones">
-# Instalar el reproductor multimedia VLC desde los repositorios nativos de Fedora
+```bash
+#Instalar el reproductor multimedia VLC desde los repositorios nativos de Fedora
 sudo dnf install vlc
 
-# Instalar la aplicación de Discord como paquete Flatpak universal
+#Instalar la aplicación de Discord como paquete Flatpak universal
 flatpak install flathub com.discordapp.Discord
 
-# Buscar programas en los repositorios de tu sistema
+#Buscar programas en los repositorios de tu sistema
 sudo apt search gimp
+```
 </TerminalWindow>
 
 ---
@@ -380,7 +384,8 @@ Aprender el uso básico de la terminal te hará ver que realizar ciertas tareas 
 
 Para que empieces a familiarizarte con ella y pierdas el miedo, he preparado un listado con los comandos de supervivencia esenciales que todo usuario principiante de Linux debería conocer:
 
-<CodeBlockWindow language="bash" title="Comandos Esenciales de Supervivencia">
+<CodeBlockWindow language="bash" title="Comandos esenciales">
+```bash
 # ======== NAVEGACIÓN POR EL SISTEMA ========
 
 # pwb (Print Working Directory): Muestra en qué ruta/carpeta te encuentras en este momento
@@ -426,8 +431,8 @@ free -m
 
 # htop: Muestra en tiempo real el consumo de CPU y RAM, junto al administrador de procesos
 htop
+```
 </CodeBlockWindow>
-
 ### Trucos de la Terminal para ahorrar tiempo:
 
 *   **Autocompletado con Tabulador:** Empieza a escribir el nombre de una carpeta o de un archivo y pulsa la tecla `Tab` en tu teclado. La terminal completará el nombre del archivo de forma automática. Si hay varios archivos que empiezan igual, vuelve a pulsar `Tab` y te listará las opciones disponibles. Te evitará tener que teclear nombres de archivos largos y complejos.
