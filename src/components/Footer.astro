@@ -1,9 +1,14 @@
 ---
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/ui';
+
 const today = new Date();
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const l = useTranslatedPath(lang);
 ---
 
 <footer>
-	By <a href="/" class="footer-link">jrodriiguezg.link</a> &copy; {today.getFullYear()}
+	{t('footer.by')} <a href={l('/')} class="footer-link">jrodriiguezg.link</a> &copy; {today.getFullYear()}
 	<div class="social-links">
 		<a href="https://www.instagram.com/jrodriiguezg.link/?hl=es" target="_blank" rel="noopener noreferrer">
 			<span class="sr-only">Instagram</span>

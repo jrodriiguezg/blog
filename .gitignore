@@ -200,3 +200,9 @@ dist
 
 ### Astro ###
 .astro/
+
+### Databases and dumps ###
+*.db
+*.sqlite
+*.sqlite3
+db_local_dump.sql

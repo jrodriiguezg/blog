@@ -13,9 +13,20 @@ const targetLang = lang === 'en' ? 'ES' : 'EN';
 const targetLabel = lang === 'en' ? 'Cambiar a Español' : 'Switch to English';
 ---
 
-<a href={targetPath} class="lang-toggle" title={targetLabel}>
+<a href={targetPath} class="lang-toggle" title={targetLabel} data-lang={lang === 'en' ? 'es' : 'en'}>
 	{targetLang}
 </a>
+
+<script>
+	document.querySelectorAll('.lang-toggle').forEach(el => {
+		el.addEventListener('click', () => {
+			const targetLang = el.getAttribute('data-lang');
+			if (targetLang) {
+				document.cookie = `lang=${targetLang};path=/;max-age=31536000`; // 1 year
+			}
+		});
+	});
+</script>
 
 <style>
 	.lang-toggle {

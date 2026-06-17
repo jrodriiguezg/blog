@@ -1,0 +1,39 @@
+title: "[Propuesta]: "
+labels: ["idea", "sugerencia"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 💡 Sugerir una Nueva Idea o Mejora
+        ¡Gracias por tomarte el tiempo de compartir tu idea! Por favor, completa este formulario para ayudarnos a entender mejor tu propuesta para el blog o las configuraciones.
+  - type: input
+    id: summary
+    attributes:
+      label: Resumen de la propuesta
+      description: Un título claro y directo sobre lo que quieres proponer.
+      placeholder: "Ej: Añadir soporte para HTTPS en la plantilla de Docker Compose de Pi-hole"
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: ¿Qué problema resuelve o qué valor aporta?
+      description: Describe por qué crees que esta sugerencia sería valiosa para la comunidad o para el blog.
+      placeholder: "Ej: Facilitará que los usuarios puedan asegurar su panel de administración de Pi-hole sin configuraciones adicionales..."
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Descripción detallada de la propuesta
+      description: Explica cómo te imaginas el funcionamiento, diseño o implementación de tu propuesta.
+      placeholder: "Puedes incluir trozos de código, enlaces, diagramas o cualquier detalle relevante."
+    validations:
+      required: true
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Requisitos previos
+      options:
+        - label: He buscado en las discusiones existentes para confirmar que esta idea no ha sido propuesta anteriormente.
+          required: true

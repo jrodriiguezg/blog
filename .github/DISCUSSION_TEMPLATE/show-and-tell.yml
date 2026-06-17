@@ -1,0 +1,38 @@
+title: "[Mi Setup]: "
+labels: ["show-and-tell", "comunidad"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚀 ¡Comparte tu Configuración o HomeLab!
+        ¿Tienes un setup del que estés orgulloso? ¿Modificaste alguna de las plantillas del blog para adaptarla a tus necesidades? ¡Compártelo con la comunidad!
+  - type: input
+    id: setup_name
+    attributes:
+      label: Nombre de tu setup / proyecto
+      description: Un título descriptivo e inspirador.
+      placeholder: "Ej: Mi HomeLab silencioso de 3 nodos con Proxmox"
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware utilizado (opcional)
+      description: ¿Qué equipos, Raspberry Pi, NUCs o servidores estás utilizando?
+      placeholder: "Ej: Raspberry Pi 5 8GB, Mini PC Intel N100, Switch administrado Netgear..."
+  - type: textarea
+    id: software_services
+    attributes:
+      label: Servicios y Software principales
+      description: ¿Qué servicios tienes desplegados (ej: Jellyfin, Pi-hole, Vaultwarden, etc.)?
+      placeholder: "Lista los servicios clave de tu instalación..."
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Más detalles / Capturas / Código
+      description: Comparte diagramas (Mermaid), capturas de pantalla, archivos docker-compose.yml o explicaciones de tu configuración.
+      placeholder: "Pega aquí tus explicaciones, imágenes o archivos de configuración..."
+    validations:
+      required: true

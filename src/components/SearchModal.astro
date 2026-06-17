@@ -26,7 +26,7 @@ const t = useTranslations(lang);
 		</div>
 		<div class="search-body">
 			<div id="search-results" class="search-results">
-				<p class="search-prompt">Escribe para empezar a buscar...</p>
+				<p class="search-prompt">{t('search.prompt')}</p>
 			</div>
 		</div>
 		<div class="search-footer">
@@ -318,10 +318,12 @@ const t = useTranslations(lang);
 		es: {
 			prompt: 'Escribe para empezar a buscar...',
 			noResults: 'No se encontraron resultados para su búsqueda.',
+			loading: 'Cargando...',
 		},
 		en: {
 			prompt: 'Type to begin searching...',
 			noResults: 'No results found for your query.',
+			loading: 'Loading...',
 		}
 	};
 	const currentTrans = localTranslations[lang] || localTranslations.es;
@@ -366,7 +368,7 @@ const t = useTranslations(lang);
 		}
 
 		if (!searchIndex) {
-			searchResults.innerHTML = `<p class="search-prompt">Cargando...</p>`;
+			searchResults.innerHTML = `<p class="search-prompt">${currentTrans.loading}</p>`;
 			return;
 		}
 

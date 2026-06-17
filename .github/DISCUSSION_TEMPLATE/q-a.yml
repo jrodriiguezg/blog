@@ -1,0 +1,45 @@
+title: "[Duda]: "
+labels: ["pregunta", "duda"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ❓ Haz una Pregunta u Obtén Ayuda
+        ¿Tienes problemas con alguna configuración de Docker Compose, HomeLab o Pi-node del blog? Rellena este formulario para que la comunidad o yo podamos ayudarte.
+  - type: input
+    id: topic
+    attributes:
+      label: Tema o componente afectado
+      description: ¿Sobre qué configuración o artículo del blog tienes la duda?
+      placeholder: "Ej: Docker Compose de Pi-hole + Unbound, Gravity Sync, etc."
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Descripción de la duda o problema
+      description: Explica claramente qué estás intentando hacer, qué esperas que pase y qué está ocurriendo en su lugar.
+      placeholder: "Describe tu duda aquí..."
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno de ejecución (opcional)
+      description: Información sobre tu sistema (ej: Raspberry Pi 4, Debian 12, Docker v24.0, etc.)
+      placeholder: "Ej: Raspberry Pi 4, Ubuntu Server 22.04 LTS, Docker Compose v2"
+  - type: textarea
+    id: logs_errors
+    attributes:
+      label: Logs o mensajes de error (opcional)
+      description: Si estás viendo algún error en la terminal o en los logs de Docker, pégalos aquí (usa bloques de código markdown).
+      placeholder: "```\nError: ...\n```"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pasos previos realizados
+      options:
+        - label: He revisado la documentación/artículo del blog correspondiente.
+          required: true
+        - label: He buscado en otras preguntas o problemas similares en GitHub.
+          required: true
