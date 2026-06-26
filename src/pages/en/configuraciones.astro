@@ -16,12 +16,14 @@ const FRIENDLY_NAMES = {
 	'npm': 'Nginx Proxy Manager',
 	'pihole+unbound': 'Pi-hole & Unbound',
 	'wgeasy': 'WG Easy (Wireguard)',
+	'homarr': 'Homarr',
 };
 
 const SERVICE_DESCRIPTIONS = {
 	'npm': 'Reverse proxy with a graphical user interface to manage SSL/TLS certificates and route incoming requests to local containers.',
 	'pihole+unbound': 'Network-wide DNS ad-blocker combined with Unbound as a recursive resolver for complete privacy and performance.',
-	'wgeasy': 'VPN server based on Wireguard with a simplified web UI for quick creation and management of external clients.'
+	'wgeasy': 'VPN server based on Wireguard with a simplified web UI for quick creation and management of external clients.',
+	'homarr': 'A customizable and elegant dashboard to centralize all accesses and monitor the status of your HomeLab services in real-time.'
 };
 
 function getFriendlyName(key) {
@@ -178,6 +180,27 @@ services:
 			lang: 'yaml',
 			githubUrl: 'https://github.com/jrodriiguezg/files/blob/main/pi-node/wgeasy/compose.yaml',
 			rawUrl: 'https://raw.githubusercontent.com/jrodriiguezg/files/main/pi-node/wgeasy/compose.yaml'
+		},
+		{
+			path: 'pi-node/homarr/docker-compose.yml',
+			node: 'pi-node',
+			service: 'homarr',
+			name: 'docker-compose.yml',
+			content: `services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Permite a Homarr leer el estado de otros contenedores
+      - ./homarr/appdata:/appdata # Persistencia de la configuracion local
+    environment:
+      - SECRET_ENCRYPTION_KEY=TU_CLAVE
+    ports:
+      - '7575:7575' # Expone el puerto 7575 del contenedor en el puerto 7575 de tu equipo`,
+			lang: 'yaml',
+			githubUrl: 'https://github.com/jrodriiguezg/files/blob/main/pi-node/homarr/docker-compose.yml',
+			rawUrl: 'https://raw.githubusercontent.com/jrodriiguezg/files/main/pi-node/homarr/docker-compose.yml'
 		}
 	);
 }
@@ -204,12 +227,12 @@ const nodeKeys = Object.keys(groupedData);
 	heroImage="/configuraciones-hero.png"
 >
 	<p>
-		This section stores the functional **Docker Compose** templates I use in my HomeLab, dynamically fetched from the public GitHub repository <a href={`https://github.com/${GITHUB_USER}/${REPO}`} target="_blank" rel="noopener noreferrer"><strong>{GITHUB_USER}/{REPO}</strong></a>. 
+		This section stores the functional **Docker Compose** templates I use in my HomeLab, fetched at build-time from the public GitHub repository <a href={`https://github.com/${GITHUB_USER}/${REPO}`} target="_blank" rel="noopener noreferrer"><strong>{GITHUB_USER}/{REPO}</strong></a> (it does not sync in real-time in the browser). 
 		You can navigate through the different nodes and services to inspect, copy code, or download files directly.
 	</p>
 
 	<div class="sync-banner">
-		<span class="sync-status"><span class="dot animate-pulse"></span> Synced with GitHub</span>
+		<span class="sync-status"><span class="dot animate-pulse"></span> Updated at build-time (not real-time)</span>
 		<a href={`https://github.com/${GITHUB_USER}/${REPO}`} class="repo-link" target="_blank" rel="noopener noreferrer">
 			<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
 			{GITHUB_USER}/{REPO}
