@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/ui';
+import { GISCUS_REPO, GISCUS_REPO_ID, GISCUS_CATEGORY, GISCUS_CATEGORY_ID } from '../consts';
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -383,41 +384,30 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 					</div>
 					<slot />
 
-					<!-- Sección de Comentarios Anónimos -->
+					<!-- Sección de Comentarios con Giscus -->
 					<hr class="comments-divider" />
-					<section 
-						class="comments-section" 
-						data-slug={Astro.params.slug}
-						data-lang={lang}
-						data-msg-loading={t('comments.loading')}
-						data-msg-no-comments={t('comments.noComments')}
-						data-msg-error-load={t('comments.errorLoad')}
-						data-msg-conn-error-load={t('comments.connErrorLoad')}
-						data-msg-success={t('comments.success')}
-						data-msg-error={t('comments.error')}
-						data-msg-conn-error={t('comments.connError')}
-						data-btn-submit={t('comments.submit')}
-						data-btn-submitting={t('comments.submitting')}
-					>
+					<section class="comments-section">
 						<h3>{t('comments.title')}</h3>
-						<div id="comments-list" class="comments-list">
-							<!-- Populado dinámicamente -->
-							<p class="no-comments">{t('comments.loading')}</p>
+						<div 
+							class="giscus"
+							data-repo={GISCUS_REPO}
+							data-repo-id={GISCUS_REPO_ID}
+							data-category={GISCUS_CATEGORY}
+							data-category-id={GISCUS_CATEGORY_ID}
+							data-mapping="pathname"
+							data-strict="0"
+							data-reactions-enabled="1"
+							data-emit-metadata="0"
+							data-input-position="bottom"
+							data-theme="transparent_dark"
+							data-lang={lang}
+						></div>
+						<div class="giscus-warning" style="display: none; padding: 1.5rem; border: 1px dashed var(--accent); border-radius: 8px; margin-top: 1.5rem; color: var(--text-color);">
+							<h4 style="margin: 0 0 0.5rem 0; color: var(--title-color);">{t('comments.giscusPendingTitle')}</h4>
+							<p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">
+								{t('comments.giscusPendingDesc')}
+							</p>
 						</div>
-
-						<form id="comment-form" class="comment-form">
-							<h4>{t('comments.writeAnonymous')}</h4>
-							<div class="form-group">
-								<label for="comment-author">{t('comments.authorLabel')}</label>
-								<input type="text" id="comment-author" placeholder={t('comments.authorPlaceholder')} maxlength="50" autocomplete="off" />
-							</div>
-							<div class="form-group">
-								<label for="comment-content">{t('comments.contentLabel')}</label>
-								<textarea id="comment-content" required placeholder={t('comments.contentPlaceholder')} maxlength="1000" rows="4"></textarea>
-							</div>
-							<button type="submit" id="submit-comment-btn" class="submit-btn">{t('comments.submit')}</button>
-							<div id="comment-message" class="comment-message"></div>
-						</form>
 					</section>
 				</div>
 			</article>
@@ -432,139 +422,64 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 				theme: 'dark',
 			});
 
-			// Lógica del sistema de comentarios anónimos
-			const commentsSection = document.querySelector('.comments-section');
-			if (commentsSection) {
-				const slug = commentsSection.getAttribute('data-slug');
-				const lang = commentsSection.getAttribute('data-lang') || 'es';
-				const msgLoading = commentsSection.getAttribute('data-msg-loading') || 'Cargando comentarios...';
-				const msgNoComments = commentsSection.getAttribute('data-msg-no-comments') || 'No hay comentarios aún.';
-				const msgErrorLoad = commentsSection.getAttribute('data-msg-error-load') || 'Error al cargar los comentarios.';
-				const msgConnErrorLoad = commentsSection.getAttribute('data-msg-conn-error-load') || 'Error de conexión al cargar comentarios.';
-				const msgSuccess = commentsSection.getAttribute('data-msg-success') || '¡Comentario publicado con éxito!';
-				const msgError = commentsSection.getAttribute('data-msg-error') || 'Error al enviar el comentario.';
-				const msgConnError = commentsSection.getAttribute('data-msg-conn-error') || 'Error de conexión. Inténtalo de nuevo.';
-				const btnSubmit = commentsSection.getAttribute('data-btn-submit') || 'Enviar comentario';
-				const btnSubmitting = commentsSection.getAttribute('data-btn-submitting') || 'Enviando...';
+			// Lógica para inicializar y gestionar Giscus
+			const giscusContainer = document.querySelector('.giscus') as HTMLElement;
+			const giscusWarning = document.querySelector('.giscus-warning') as HTMLElement;
 
-				const commentsList = document.getElementById('comments-list');
-				const commentForm = document.getElementById('comment-form');
-				const messageEl = document.getElementById('comment-message');
-				const submitBtn = document.getElementById('submit-comment-btn') as HTMLButtonElement;
+			if (giscusContainer) {
+				const repo = giscusContainer.getAttribute('data-repo');
+				const repoId = giscusContainer.getAttribute('data-repo-id');
+				const category = giscusContainer.getAttribute('data-category');
+				const categoryId = giscusContainer.getAttribute('data-category-id');
+				const mapping = giscusContainer.getAttribute('data-mapping') || 'pathname';
+				const reactionsEnabled = giscusContainer.getAttribute('data-reactions-enabled') || '1';
+				const emitMetadata = giscusContainer.getAttribute('data-emit-metadata') || '0';
+				const inputPosition = giscusContainer.getAttribute('data-input-position') || 'bottom';
+				const lang = giscusContainer.getAttribute('data-lang') || 'es';
 
-				// Cargar comentarios
-				const loadComments = async () => {
-					try {
-						const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug || '')}`);
-						if (res.ok) {
-							const comments = await res.json();
-							renderComments(comments);
-						} else {
-							if (commentsList) commentsList.innerHTML = `<p class="no-comments">${msgErrorLoad}</p>`;
-						}
-					} catch (e) {
-						console.error('Error al cargar comentarios:', e);
-						if (commentsList) commentsList.innerHTML = `<p class="no-comments">${msgConnErrorLoad}</p>`;
-					}
-				};
+				// Si no hay id de categoría configurado, mostramos advertencia al usuario y no cargamos Giscus
+				if (!categoryId) {
+					if (giscusWarning) giscusWarning.style.display = 'block';
+				} else {
+					// Determinar el tema de giscus en función de la clase dark de html
+					const isDark = document.documentElement.classList.contains('dark');
+					const theme = isDark ? 'transparent_dark' : 'light';
 
-				// Renderizar comentarios
-				const renderComments = (comments: any[]) => {
-					if (!commentsList) return;
-					if (comments.length === 0) {
-						commentsList.innerHTML = `<p class="no-comments">${msgNoComments}</p>`;
-						return;
-					}
+					const script = document.createElement('script');
+					script.src = 'https://giscus.app/client.js';
+					script.setAttribute('data-repo', repo || '');
+					script.setAttribute('data-repo-id', repoId || '');
+					script.setAttribute('data-category', category || '');
+					script.setAttribute('data-category-id', categoryId || '');
+					script.setAttribute('data-mapping', mapping);
+					script.setAttribute('data-strict', '0');
+					script.setAttribute('data-reactions-enabled', reactionsEnabled);
+					script.setAttribute('data-emit-metadata', emitMetadata);
+					script.setAttribute('data-input-position', inputPosition);
+					script.setAttribute('data-theme', theme);
+					script.setAttribute('data-lang', lang);
+					script.setAttribute('crossorigin', 'anonymous');
+					script.async = true;
 
-					commentsList.innerHTML = comments
-						.map((c) => {
-							const date = new Date(c.created_at).toLocaleDateString(lang === 'en' ? 'en-US' : 'es-ES', {
-								year: 'numeric',
-								month: 'short',
-								day: 'numeric',
-								hour: '2-digit',
-								minute: '2-digit',
-							});
-							const initials = c.author_name.substring(0, 2).toUpperCase() || 'AN';
-							return `
-								<div class="comment-item">
-									<div class="comment-header">
-										<div class="comment-author-info">
-											<div class="comment-avatar">${initials}</div>
-											<span class="comment-author-name">${c.author_name}</span>
-										</div>
-										<span class="comment-date">${date}</span>
-									</div>
-									<div class="comment-body">${c.content}</div>
-								</div>
-							`;
-						})
-						.join('');
-				};
+					document.head.appendChild(script);
 
-				// Escuchar envío del formulario de comentarios
-				if (commentForm) {
-					commentForm.addEventListener('submit', async (e) => {
-						e.preventDefault();
-						
-						const authorEl = document.getElementById('comment-author') as HTMLInputElement;
-						const contentEl = document.getElementById('comment-content') as HTMLTextAreaElement;
-
-						if (!contentEl || contentEl.value.trim() === '') return;
-
-						// Deshabilitar botón para evitar envíos múltiples
-						if (submitBtn) {
-							submitBtn.disabled = true;
-							submitBtn.textContent = btnSubmitting;
-						}
-						if (messageEl) {
-							messageEl.textContent = '';
-							messageEl.className = 'comment-message';
-						}
-
-						try {
-							const res = await fetch('/api/comments', {
-								method: 'POST',
-								headers: { 'Content-Type': 'application/json' },
-								body: JSON.stringify({
-									slug,
-									author: authorEl?.value || '',
-									content: contentEl.value,
-								}),
-							});
-
-							if (res.ok) {
-								if (messageEl) {
-									messageEl.textContent = msgSuccess;
-									messageEl.className = 'comment-message success';
-								}
-								if (contentEl) contentEl.value = '';
-								if (authorEl) authorEl.value = '';
-								// Recargar la lista de comentarios
-								await loadComments();
-							} else {
-								const data = await res.json();
-								if (messageEl) {
-									messageEl.textContent = data.error || msgError;
-									messageEl.className = 'comment-message error';
-								}
-							}
-						} catch (err) {
-							if (messageEl) {
-								messageEl.textContent = msgConnError;
-								messageEl.className = 'comment-message error';
-							}
-						} finally {
-							if (submitBtn) {
-								submitBtn.disabled = false;
-								submitBtn.textContent = btnSubmit;
-							}
+					// Sincronizar el tema de Giscus cuando cambie el tema del sitio
+					const observer = new MutationObserver(() => {
+						const nextTheme = document.documentElement.classList.contains('dark') ? 'transparent_dark' : 'light';
+						const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+						if (iframe && iframe.contentWindow) {
+							iframe.contentWindow.postMessage(
+								{ giscus: { setConfig: { theme: nextTheme } } },
+								'https://giscus.app'
+							);
 						}
 					});
-				}
 
-				// Carga inicial al montar la página
-				loadComments();
+					observer.observe(document.documentElement, {
+						attributes: true,
+						attributeFilter: ['class'],
+					});
+				}
 			}
 		</script>
 	</body>
