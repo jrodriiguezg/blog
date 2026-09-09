@@ -544,7 +544,7 @@ Verify container health statuses from Docker's output:
 
 # Concurrent Load & Stress Testing
 
-Now comes the critical moment: testing how the system handles concurrent bursts. We use an asynchronous Python script leveraging `asyncio` and `aiohttp` to dispatch concurrent requests.
+Now comes the critical moment: testing how the system handles concurrent bursts. We use an asynchronous Python script leveraging `asyncio` and `aiohttp` to dispatch concurrent requests (code available on [GitHub](https://github.com/jrodriiguezg/vllm-production) and on my self-hosted [Gitea](https://git.jrodriiguezg.link/jrodriiguezg/vllm-production) instance).
 
 <CodeBlockWindow title="benchmark.py">
 ```python
@@ -746,4 +746,4 @@ The true differentiator of an enterprise deployment is deep observability. Durin
 - **Ollama remains the top choice for:** Single-user local assistants, developer workstations, laptop-based CPU/Apple Silicon testing, and effortless offline setups.
 - **vLLM is the mandatory standard for:** Multi-user services, production web apps, autonomous agent pipelines with concurrent tool execution, and enterprise microservices where predictable latency and request density per GPU govern infrastructure viability.
 
-The preconfigured Grafana dashboard JSON and the benchmark script are available in the [project repository](https://github.com/jrodriiguezg/vllm-production).
+The preconfigured Grafana dashboard definition (`panel.yaml`), Compose manifests, and the benchmark script are available on [GitHub](https://github.com/jrodriiguezg/vllm-production) and mirrored on my self-hosted [Gitea](https://git.jrodriiguezg.link/jrodriiguezg/vllm-production).

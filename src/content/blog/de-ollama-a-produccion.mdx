@@ -544,7 +544,7 @@ Podemos verificar el estado de los contenedores y el healthcheck con la salida d
 
 # Pruebas de carga y estrés concurrente
 
-Llega el momento decisivo: comprobar cómo responde este stack ante ráfagas concurrentes. Para ello desarrollé un script en Python que dispara ráfagas simultáneas mediante llamadas asíncronas con `asyncio` y `aiohttp`.
+Llega el momento decisivo: comprobar cómo responde este stack ante ráfagas concurrentes. Para ello desarrollé un script en Python que dispara ráfagas simultáneas mediante llamadas asíncronas con `asyncio` y `aiohttp` (código completo disponible en [GitHub](https://github.com/jrodriiguezg/vllm-production) y en mi servidor autoalojado en [Gitea](https://git.jrodriiguezg.link/jrodriiguezg/vllm-production)).
 
 <CodeBlockWindow title="benchmark.py">
 ```python
@@ -746,4 +746,4 @@ El valor diferencial de un despliegue de producción reside en su capacidad de m
 - **Ollama sigue siendo imbatible para:** Estaciones de trabajo personales, asistentes locales monousuario, pruebas rápidas en portátiles con CPU o MacBooks (Apple Silicon) y prototipado sin fricción.
 - **vLLM es el estándar obligatorio para:** Servicios multi-usuario, aplicaciones web, agentes autónomos ejecutando múltiples llamadas paralelas y arquitecturas de microservicios empresariales donde la latencia predecible y la densidad de peticiones por GPU definen la viabilidad económica del proyecto.
 
-El archivo del dashboard de Grafana preconfigurado y el código del benchmark los tenéis disponibles en el [repositorio del proyecto](https://github.com/jrodriiguezg/vllm-production).
+El archivo del dashboard de Grafana preconfigurado (`panel.yaml`), el orquestador Compose y el código del benchmark los tenéis disponibles en [GitHub](https://github.com/jrodriiguezg/vllm-production) y en mi servidor autoalojado en [Gitea](https://git.jrodriiguezg.link/jrodriiguezg/vllm-production).
