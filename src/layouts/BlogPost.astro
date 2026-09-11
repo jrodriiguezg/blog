@@ -8,6 +8,7 @@ import TableOfContents from '../components/TableOfContents.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import BackToTop from '../components/BackToTop.astro';
 import Lightbox from '../components/Lightbox.astro';
+import ShareButtons from '../components/ShareButtons.astro';
 import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/ui';
 import { GISCUS_REPO, GISCUS_REPO_ID, GISCUS_CATEGORY, GISCUS_CATEGORY_ID } from '../consts';
 
@@ -533,6 +534,8 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 						</div>
 
 						<slot />
+
+						<ShareButtons title={title} lang={lang} />
 
 						{relatedPosts && relatedPosts.length > 0 && (
 							<section class="related-section">

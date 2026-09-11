@@ -1,0 +1,195 @@
+---
+interface Props {
+  title: string;
+  lang?: string;
+}
+
+const { title, lang = 'es' } = Astro.props;
+
+const shareLabel = lang === 'en' ? 'Share this article' : 'Compartir este artículo';
+const copyLabel = lang === 'en' ? 'Copy link' : 'Copiar enlace';
+const copiedLabel = lang === 'en' ? 'Link copied!' : '¡Enlace copiado!';
+---
+
+<div class="share-container" data-share-title={title} data-copied-text={copiedLabel} data-copy-text={copyLabel}>
+  <span class="share-title">{shareLabel}</span>
+  <div class="share-actions">
+    <!-- X (Twitter) -->
+    <a
+      class="share-btn share-x"
+      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Compartir en X"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+      <span>X</span>
+    </a>
+
+    <!-- LinkedIn -->
+    <a
+      class="share-btn share-linkedin"
+      href="https://www.linkedin.com/sharing/share-offsite/?url="
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Compartir en LinkedIn"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+      </svg>
+      <span>LinkedIn</span>
+    </a>
+
+    <!-- Reddit -->
+    <a
+      class="share-btn share-reddit"
+      href={`https://reddit.com/submit?title=${encodeURIComponent(title)}&url=`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Compartir en Reddit"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/>
+      </svg>
+      <span>Reddit</span>
+    </a>
+
+    <!-- Copiar Enlace -->
+    <button class="share-btn share-copy" type="button" aria-label="Copiar enlace del artículo">
+      <svg class="copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+      </svg>
+      <span class="copy-label-text">{copyLabel}</span>
+    </button>
+  </div>
+</div>
+
+<style>
+  .share-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    margin: 3rem 0 1rem 0;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+  }
+
+  .share-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--title-color);
+    letter-spacing: -0.01em;
+  }
+
+  .share-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-color);
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1;
+    font-family: inherit;
+  }
+
+  .share-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .share-btn.copied {
+    border-color: #10b981;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+  }
+
+  @media (max-width: 640px) {
+    .share-container {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem;
+    }
+    .share-actions {
+      width: 100%;
+    }
+    .share-btn {
+      flex: 1 1 calc(50% - 0.3rem);
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  function setupShareButtons() {
+    const containers = document.querySelectorAll<HTMLElement>('.share-container');
+    const currentUrl = window.location.href;
+
+    containers.forEach((container) => {
+      // Set current URL dynamically on anchor tags
+      const xLink = container.querySelector<HTMLAnchorElement>('.share-x');
+      const linkedinLink = container.querySelector<HTMLAnchorElement>('.share-linkedin');
+      const redditLink = container.querySelector<HTMLAnchorElement>('.share-reddit');
+      const copyBtn = container.querySelector<HTMLButtonElement>('.share-copy');
+      const copyLabel = copyBtn?.querySelector<HTMLElement>('.copy-label-text');
+
+      const copiedText = container.getAttribute('data-copied-text') || 'Copiado';
+      const originalCopyText = container.getAttribute('data-copy-text') || 'Copiar enlace';
+
+      if (xLink) {
+        xLink.href = xLink.href + encodeURIComponent(currentUrl);
+      }
+      if (linkedinLink) {
+        linkedinLink.href = linkedinLink.href + encodeURIComponent(currentUrl);
+      }
+      if (redditLink) {
+        redditLink.href = redditLink.href + encodeURIComponent(currentUrl);
+      }
+
+      if (copyBtn && copyLabel) {
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(currentUrl);
+            copyBtn.classList.add('copied');
+            copyLabel.textContent = copiedText;
+
+            setTimeout(() => {
+              copyBtn.classList.remove('copied');
+              copyLabel.textContent = originalCopyText;
+            }, 2500);
+          } catch (e) {
+            // Fallback
+            copyLabel.textContent = 'Error';
+          }
+        });
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupShareButtons);
+  } else {
+    setupShareButtons();
+  }
+</script>
