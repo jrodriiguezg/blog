@@ -17,7 +17,7 @@ const copiedLabel = lang === 'en' ? 'Link copied!' : '¡Enlace copiado!';
     <!-- X (Twitter) -->
     <a
       class="share-btn share-x"
-      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=`}
+      href="#"
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Compartir en X"
@@ -31,7 +31,7 @@ const copiedLabel = lang === 'en' ? 'Link copied!' : '¡Enlace copiado!';
     <!-- LinkedIn -->
     <a
       class="share-btn share-linkedin"
-      href="https://www.linkedin.com/sharing/share-offsite/?url="
+      href="#"
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Compartir en LinkedIn"
@@ -45,7 +45,7 @@ const copiedLabel = lang === 'en' ? 'Link copied!' : '¡Enlace copiado!';
     <!-- Reddit -->
     <a
       class="share-btn share-reddit"
-      href={`https://reddit.com/submit?title=${encodeURIComponent(title)}&url=`}
+      href="#"
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Compartir en Reddit"
@@ -144,33 +144,39 @@ const copiedLabel = lang === 'en' ? 'Link copied!' : '¡Enlace copiado!';
 <script>
   function setupShareButtons() {
     const containers = document.querySelectorAll<HTMLElement>('.share-container');
-    const currentUrl = window.location.href;
 
     containers.forEach((container) => {
-      // Set current URL dynamically on anchor tags
+      const title = container.getAttribute('data-share-title') || document.title;
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const canonicalBase = 'https://blog.jrodriiguezg.link';
+      const shareUrl = isLocal
+        ? canonicalBase + window.location.pathname + window.location.search
+        : window.location.href;
+
       const xLink = container.querySelector<HTMLAnchorElement>('.share-x');
       const linkedinLink = container.querySelector<HTMLAnchorElement>('.share-linkedin');
       const redditLink = container.querySelector<HTMLAnchorElement>('.share-reddit');
       const copyBtn = container.querySelector<HTMLButtonElement>('.share-copy');
       const copyLabel = copyBtn?.querySelector<HTMLElement>('.copy-label-text');
 
-      const copiedText = container.getAttribute('data-copied-text') || 'Copiado';
+      const copiedText = container.getAttribute('data-copied-text') || '¡Enlace copiado!';
       const originalCopyText = container.getAttribute('data-copy-text') || 'Copiar enlace';
 
       if (xLink) {
-        xLink.href = xLink.href + encodeURIComponent(currentUrl);
+        xLink.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`;
       }
       if (linkedinLink) {
-        linkedinLink.href = linkedinLink.href + encodeURIComponent(currentUrl);
+        // Usa el compositor de publicaciones de LinkedIn con texto y URL predefinidos
+        linkedinLink.href = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(title + '\n\n' + shareUrl)}`;
       }
       if (redditLink) {
-        redditLink.href = redditLink.href + encodeURIComponent(currentUrl);
+        redditLink.href = `https://reddit.com/submit?title=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`;
       }
 
       if (copyBtn && copyLabel) {
         copyBtn.addEventListener('click', async () => {
           try {
-            await navigator.clipboard.writeText(currentUrl);
+            await navigator.clipboard.writeText(shareUrl);
             copyBtn.classList.add('copied');
             copyLabel.textContent = copiedText;
 
@@ -179,7 +185,6 @@ const copiedLabel = lang === 'en' ? 'Link copied!' : '¡Enlace copiado!';
               copyLabel.textContent = originalCopyText;
             }, 2500);
           } catch (e) {
-            // Fallback
             copyLabel.textContent = 'Error';
           }
         });
