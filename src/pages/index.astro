@@ -337,7 +337,7 @@ const categoryTitles: Record<string, string> = {
 								<span class={`category-badge ${featuredPost.data.category}`}>
 									{categoryTitles[featuredPost.data.category] || featuredPost.data.category}
 								</span>
-								<span class="reading-time">⏱️ {getReadingTime(featuredPost.body)}</span>
+								<span class="reading-time">{getReadingTime(featuredPost.body)}</span>
 							</div>
 							<h2 class="featured-title">{featuredPost.data.title}</h2>
 							<p class="featured-desc">{featuredPost.data.description}</p>
@@ -365,7 +365,7 @@ const categoryTitles: Record<string, string> = {
 									<span class={`category-badge ${post.data.category}`}>
 										{categoryTitles[post.data.category] || post.data.category}
 									</span>
-									<span class="reading-time">⏱️ {getReadingTime(post.body)}</span>
+									<span class="reading-time">{getReadingTime(post.body)}</span>
 								</div>
 								<h3 class="card-title">{post.data.title}</h3>
 								<p class="card-desc">{post.data.description}</p>
