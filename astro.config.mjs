@@ -24,6 +24,10 @@ function remarkMermaid() {
 // https://astro.build/config
 export default defineConfig({
 	output: "static",
+	redirects: {
+		"/about": "https://jrodriiguezg.link",
+		"/en/about": "https://jrodriiguezg.link",
+	},
 	i18n: {
 		defaultLocale: "es",
 		locales: ["es", "en"],
