@@ -36,6 +36,11 @@ html.dark {
 	--box-shadow-hover: 0 6px 18px rgba(0, 0, 0, 0.6);
 }
 
+html {
+	scroll-behavior: smooth;
+	scroll-padding-top: 5.5rem;
+}
+
 * {
 	box-sizing: border-box;
 }
