@@ -1,0 +1,40 @@
+---
+// Barra de progreso de lectura superior fija y solida
+---
+
+<div class="reading-progress-bar" id="reading-progress" aria-hidden="true"></div>
+
+<style>
+  .reading-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--accent);
+    transform-origin: left;
+    transform: scaleX(0);
+    z-index: 100;
+    pointer-events: none;
+    transition: transform 50ms linear;
+  }
+</style>
+
+<script>
+  function initProgress() {
+    const bar = document.getElementById('reading-progress');
+    if (!bar) return;
+
+    function update() {
+      const scrollY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? scrollY / maxScroll : 0;
+      bar.style.transform = `scaleX(${Math.min(Math.max(progress, 0), 1)})`;
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
+  document.addEventListener('DOMContentLoaded', initProgress);
+</script>

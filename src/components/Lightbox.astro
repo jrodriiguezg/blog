@@ -1,0 +1,143 @@
+---
+// Visor modal solido para capturas e imagenes tecnicas
+---
+
+<div id="lightbox-modal" class="lightbox-modal" aria-hidden="true">
+  <div class="lightbox-overlay" id="lightbox-overlay"></div>
+  <div class="lightbox-container">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar visor">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <img id="lightbox-img" class="lightbox-image" src="" alt="" />
+    <p id="lightbox-caption" class="lightbox-caption"></p>
+  </div>
+</div>
+
+<style>
+  .lightbox-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .lightbox-modal.active {
+    display: flex;
+  }
+
+  .lightbox-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 15, 25, 0.88);
+    cursor: zoom-out;
+  }
+
+  .lightbox-container {
+    position: relative;
+    z-index: 2;
+    max-width: 95vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .lightbox-image {
+    max-width: 100%;
+    max-height: 82vh;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .lightbox-caption {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+    text-align: center;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -2.75rem;
+    right: 0;
+    background: #1e293b;
+    border: 1px solid #475569;
+    color: #f8fafc;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+  }
+
+  .lightbox-close:hover {
+    background: #334155;
+    transform: scale(1.05);
+  }
+
+  :global(.prose img:not(.icon-img)) {
+    cursor: zoom-in;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  :global(.prose img:not(.icon-img):hover) {
+    box-shadow: var(--box-shadow);
+  }
+</style>
+
+<script>
+  function initLightbox() {
+    const modal = document.getElementById('lightbox-modal');
+    const overlay = document.getElementById('lightbox-overlay');
+    const closeBtn = document.getElementById('lightbox-close');
+    const modalImg = document.getElementById('lightbox-img') as HTMLImageElement;
+    const modalCaption = document.getElementById('lightbox-caption');
+
+    if (!modal || !modalImg) return;
+
+    function open(src: string, alt: string) {
+      modalImg.src = src;
+      modalImg.alt = alt;
+      if (modalCaption) modalCaption.textContent = alt || '';
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function close() {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      modalImg.src = '';
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.prose img').forEach((img) => {
+      const imgEl = img as HTMLImageElement;
+      imgEl.addEventListener('click', () => {
+        open(imgEl.src, imgEl.alt);
+      });
+    });
+
+    overlay?.addEventListener('click', close);
+    closeBtn?.addEventListener('click', close);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        close();
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initLightbox);
+</script>
