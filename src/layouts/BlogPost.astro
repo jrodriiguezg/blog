@@ -57,30 +57,9 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 		<style>
 			.post-page-main {
 				width: 100%;
-				max-width: 1120px;
+				max-width: 860px;
 				margin: 0 auto;
 				padding: 2.5rem 1.5rem 5rem 1.5rem;
-			}
-			.post-layout-grid {
-				display: grid;
-				grid-template-columns: minmax(0, 1fr) 230px;
-				gap: 3rem;
-				align-items: start;
-			}
-			.post-main-column {
-				min-width: 0;
-			}
-			.post-sidebar-aside {
-				position: sticky;
-				top: 5.5rem;
-			}
-			@media (max-width: 1024px) {
-				.post-layout-grid {
-					grid-template-columns: minmax(0, 1fr);
-				}
-				.post-sidebar-aside {
-					display: none;
-				}
 			}
 			.date-row {
 				display: flex;
@@ -494,91 +473,88 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 		<ReadingProgress />
 		<Header />
 		<main class="post-page-main">
-			<div class="post-layout-grid">
-				<article class="post-main-column">
-					<div class="hero-image">
-						{heroImage && <img width={1020} height={510} src={heroImage} alt="" />}
+			<article class="post-article">
+				<div class="hero-image">
+					{heroImage && <img width={1020} height={510} src={heroImage} alt="" />}
+				</div>
+				<div class="prose">
+					<div class="title">
+						<div class="date-row">
+							<FormattedDate date={pubDate} />
+							<span class="meta-dot">·</span>
+							<span class="reading-badge">{readingTime}</span>
+							{
+								updatedDate && (
+									<span class="meta-dot">·</span>
+									<span class="last-updated-on">
+										{lang === 'en' ? 'Updated' : 'Actualizado'} <FormattedDate date={updatedDate} />
+									</span>
+								)
+							}
+						</div>
+						<h1>{title}</h1>
+						<div class="post-metadata">
+							{category && (
+								<a href={l(`/blog/category/${category}`)} class={`category-badge ${category}`}>
+									{activeCategoryTitles[category] || category}
+								</a>
+							)}
+							{tags.map((tag) => (
+								<a href={l(`/blog/tag/${tag}`)} class="tag-badge">#{tag}</a>
+							))}
+						</div>
+						<hr />
 					</div>
-					<div class="prose">
-						<div class="title">
-							<div class="date-row">
-								<FormattedDate date={pubDate} />
-								<span class="meta-dot">·</span>
-								<span class="reading-badge">{readingTime}</span>
-								{
-									updatedDate && (
-										<span class="meta-dot">·</span>
-										<span class="last-updated-on">
-											{lang === 'en' ? 'Updated' : 'Actualizado'} <FormattedDate date={updatedDate} />
-										</span>
-									)
-								}
-							</div>
-							<h1>{title}</h1>
-							<div class="post-metadata">
-								{category && (
-									<a href={l(`/blog/category/${category}`)} class={`category-badge ${category}`}>
-										{activeCategoryTitles[category] || category}
+
+					{headings && headings.length > 0 && (
+						<TableOfContents headings={headings} lang={lang} />
+					)}
+
+					<slot />
+
+					{relatedPosts && relatedPosts.length > 0 && (
+						<section class="related-section">
+							<h3 class="related-title">{lang === 'en' ? 'Related Articles' : 'Artículos relacionados'}</h3>
+							<div class="related-grid">
+								{relatedPosts.map((rel) => (
+									<a href={l(`/blog/${rel.id.replace(/^en\//, '')}/`)} class="related-card">
+										<h4 class="related-card-title">{rel.data.title}</h4>
+										<div class="related-card-meta">
+											<FormattedDate date={rel.data.pubDate} />
+										</div>
 									</a>
-								)}
-								{tags.map((tag) => (
-									<a href={l(`/blog/tag/${tag}`)} class="tag-badge">#{tag}</a>
 								))}
 							</div>
-							<hr />
-						</div>
-						<slot />
-
-						{relatedPosts && relatedPosts.length > 0 && (
-							<section class="related-section">
-								<h3 class="related-title">{lang === 'en' ? 'Related Articles' : 'Artículos relacionados'}</h3>
-								<div class="related-grid">
-									{relatedPosts.map((rel) => (
-										<a href={l(`/blog/${rel.id.replace(/^en\//, '')}/`)} class="related-card">
-											<h4 class="related-card-title">{rel.data.title}</h4>
-											<div class="related-card-meta">
-												<FormattedDate date={rel.data.pubDate} />
-											</div>
-										</a>
-									))}
-								</div>
-							</section>
-						)}
-
-						<!-- Sección de Comentarios con Giscus -->
-						<hr class="comments-divider" />
-						<section class="comments-section">
-							<h3>{t('comments.title')}</h3>
-							<div 
-								class="giscus"
-								data-repo={GISCUS_REPO}
-								data-repo-id={GISCUS_REPO_ID}
-								data-category={GISCUS_CATEGORY}
-								data-category-id={GISCUS_CATEGORY_ID}
-								data-mapping="pathname"
-								data-strict="0"
-								data-reactions-enabled="1"
-								data-emit-metadata="0"
-								data-input-position="bottom"
-								data-theme="transparent_dark"
-								data-lang={lang}
-							></div>
-							<div class="giscus-warning" style="display: none; padding: 1.5rem; border: 1px dashed var(--accent); border-radius: 8px; margin-top: 1.5rem; color: var(--text-color);">
-								<h4 style="margin: 0 0 0.5rem 0; color: var(--title-color);">{t('comments.giscusPendingTitle')}</h4>
-								<p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">
-									{t('comments.giscusPendingDesc')}
-								</p>
-							</div>
 						</section>
-					</div>
-				</article>
+					)}
 
-				{headings && headings.length > 0 && (
-					<aside class="post-sidebar-aside">
-						<TableOfContents headings={headings} lang={lang} />
-					</aside>
-				)}
-			</div>
+					<!-- Sección de Comentarios con Giscus -->
+					<hr class="comments-divider" />
+					<section class="comments-section">
+						<h3>{t('comments.title')}</h3>
+						<div 
+							class="giscus"
+							data-repo={GISCUS_REPO}
+							data-repo-id={GISCUS_REPO_ID}
+							data-category={GISCUS_CATEGORY}
+							data-category-id={GISCUS_CATEGORY_ID}
+							data-mapping="pathname"
+							data-strict="0"
+							data-reactions-enabled="1"
+							data-emit-metadata="0"
+							data-input-position="bottom"
+							data-theme="transparent_dark"
+							data-lang={lang}
+						></div>
+						<div class="giscus-warning" style="display: none; padding: 1.5rem; border: 1px dashed var(--accent); border-radius: 8px; margin-top: 1.5rem; color: var(--text-color);">
+							<h4 style="margin: 0 0 0.5rem 0; color: var(--title-color);">{t('comments.giscusPendingTitle')}</h4>
+							<p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">
+								{t('comments.giscusPendingDesc')}
+							</p>
+						</div>
+					</section>
+				</div>
+			</article>
 		</main>
 		<BackToTop />
 		<Lightbox />
