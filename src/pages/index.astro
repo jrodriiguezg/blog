@@ -41,20 +41,20 @@ const categoryTitles: Record<string, string> = {
 			.category-tabs {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 0.5rem;
-				margin-bottom: 2.5rem;
+				gap: 0.6rem;
+				margin-bottom: 2.75rem;
 				justify-content: center;
-				padding: 0.35rem;
+				padding: 0.5rem;
 				background: var(--surface-color);
 				border: 1px solid var(--border-color);
 				border-radius: var(--radius);
 			}
 			.category-tabs a {
-				padding: 0.4rem 0.9rem;
+				padding: 0.45rem 1.1rem;
 				text-decoration: none;
 				color: var(--text-muted);
 				border-radius: var(--radius-sm);
-				font-size: 0.9rem;
+				font-size: 0.95rem;
 				font-weight: 500;
 				transition: background-color 0.2s ease, color 0.2s ease;
 			}
@@ -70,7 +70,7 @@ const categoryTitles: Record<string, string> = {
 
 			/* Featured Post Card */
 			.featured-section {
-				margin-bottom: 2.5rem;
+				margin-bottom: 3rem;
 			}
 			.featured-card {
 				display: grid;
@@ -93,7 +93,7 @@ const categoryTitles: Record<string, string> = {
 				position: relative;
 				overflow: hidden;
 				background: var(--surface-color);
-				min-height: 280px;
+				min-height: 380px;
 			}
 			.featured-image-wrapper img {
 				width: 100%;
@@ -103,15 +103,15 @@ const categoryTitles: Record<string, string> = {
 				border-radius: 0;
 			}
 			.featured-content {
-				padding: 2rem;
+				padding: 2.5rem 2.75rem;
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
 			}
 			.featured-title {
-				font-size: 1.6rem;
-				line-height: 1.3;
-				margin: 0.75rem 0;
+				font-size: 2.1rem;
+				line-height: 1.25;
+				margin: 1rem 0;
 				color: var(--title-color);
 				transition: color 0.2s ease;
 			}
@@ -119,10 +119,10 @@ const categoryTitles: Record<string, string> = {
 				color: var(--accent);
 			}
 			.featured-desc {
-				font-size: 0.95rem;
+				font-size: 1.05rem;
 				color: var(--text-color);
-				line-height: 1.6;
-				margin-bottom: 1.5rem;
+				line-height: 1.65;
+				margin-bottom: 1.75rem;
 				display: -webkit-box;
 				-webkit-line-clamp: 3;
 				-webkit-box-orient: vertical;
@@ -132,18 +132,18 @@ const categoryTitles: Record<string, string> = {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				font-size: 0.85rem;
+				font-size: 0.92rem;
 				color: var(--text-muted);
 				margin-top: auto;
-				padding-top: 1rem;
+				padding-top: 1.25rem;
 				border-top: 1px solid var(--border-color);
 			}
 
 			/* Grid of Posts */
 			.posts-grid {
 				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-				gap: 1.5rem;
+				grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+				gap: 2rem;
 				list-style: none;
 				padding: 0;
 				margin: 0;
@@ -168,7 +168,7 @@ const categoryTitles: Record<string, string> = {
 			.card-image-wrapper {
 				position: relative;
 				width: 100%;
-				aspect-ratio: 16 / 9;
+				aspect-ratio: 16 / 9.5;
 				overflow: hidden;
 				background: var(--surface-color);
 			}
@@ -180,7 +180,7 @@ const categoryTitles: Record<string, string> = {
 				border-radius: 0;
 			}
 			.card-content {
-				padding: 1.25rem;
+				padding: 1.5rem 1.6rem;
 				display: flex;
 				flex-direction: column;
 				flex-grow: 1;
@@ -188,14 +188,14 @@ const categoryTitles: Record<string, string> = {
 			.card-meta {
 				display: flex;
 				align-items: center;
-				gap: 0.5rem;
-				margin-bottom: 0.5rem;
+				gap: 0.6rem;
+				margin-bottom: 0.6rem;
 				flex-wrap: wrap;
 			}
 			.card-title {
-				font-size: 1.15rem;
+				font-size: 1.25rem;
 				line-height: 1.35;
-				margin: 0.25rem 0 0.5rem 0;
+				margin: 0.35rem 0 0.6rem 0;
 				color: var(--title-color);
 				transition: color 0.2s ease;
 			}
@@ -203,10 +203,10 @@ const categoryTitles: Record<string, string> = {
 				color: var(--accent);
 			}
 			.card-desc {
-				font-size: 0.88rem;
+				font-size: 0.95rem;
 				color: var(--text-color);
-				line-height: 1.55;
-				margin-bottom: 1.25rem;
+				line-height: 1.6;
+				margin-bottom: 1.5rem;
 				display: -webkit-box;
 				-webkit-line-clamp: 2;
 				-webkit-box-orient: vertical;
@@ -216,18 +216,19 @@ const categoryTitles: Record<string, string> = {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				font-size: 0.82rem;
+				font-size: 0.9rem;
 				color: var(--text-muted);
 				margin-top: auto;
-				padding-top: 0.75rem;
+				padding-top: 1rem;
 				border-top: 1px solid var(--border-color);
 			}
 			.read-action {
 				font-weight: 600;
 				color: var(--accent);
+				font-size: 0.92rem;
 			}
 			.reading-time {
-				font-size: 0.75rem;
+				font-size: 0.82rem;
 				color: var(--text-muted);
 			}
 

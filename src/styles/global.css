@@ -54,14 +54,14 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: var(--text-color);
-	font-size: 17px;
+	font-size: 18px;
 	line-height: 1.7;
 	transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 main {
-	width: 1040px;
-	max-width: calc(100% - 2.5rem);
+	width: 1340px;
+	max-width: calc(100% - 3rem);
 	margin: auto;
 	padding: 2.5rem 0 4rem 0;
 }

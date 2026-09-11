@@ -58,14 +58,14 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 		<style>
 			.post-page-main {
 				width: 100%;
-				max-width: 1140px;
+				max-width: 1280px;
 				margin: 0 auto;
 				padding: 2.5rem 1.5rem 5rem 1.5rem;
 			}
 			.post-layout-grid {
 				display: grid;
-				grid-template-columns: minmax(0, 1fr) 220px;
-				gap: 3.5rem;
+				grid-template-columns: minmax(0, 1fr) 240px;
+				gap: 4rem;
 				align-items: start;
 			}
 			.post-main-column {
@@ -152,8 +152,8 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 			}
 			.hero-image {
 				width: 100%;
-				max-width: 1020px;
-				margin: 0 auto 2rem auto;
+				max-width: 100%;
+				margin: 0 auto 2.5rem auto;
 			}
 			.hero-image img {
 				display: block;
@@ -162,7 +162,7 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 				aspect-ratio: 21 / 9;
 				object-fit: cover;
 				object-position: center;
-				max-height: 360px;
+				max-height: 440px;
 				border-radius: var(--radius);
 				border: 1px solid var(--border-color);
 				box-shadow: var(--box-shadow);
@@ -208,11 +208,12 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 				border-color: #10b981;
 			}
 			.prose {
-				width: 820px;
+				width: 100%;
 				max-width: 100%;
 				margin: auto;
 				padding: 0;
 				color: var(--text-color);
+				font-size: 1.05rem;
 			}
 			.title {
 				margin-bottom: 2rem;
@@ -221,6 +222,8 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 				line-height: 1.3;
 			}
 			.title h1 {
+				font-size: 2.6rem;
+				line-height: 1.25;
 				margin: 0 0 0.5em 0;
 			}
 			.date {
