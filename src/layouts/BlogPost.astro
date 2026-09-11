@@ -58,22 +58,63 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 				aspect-ratio: 21 / 9;
 				object-fit: cover;
 				object-position: center;
-				max-height: 340px;
-				border-radius: 12px;
+				max-height: 360px;
+				border-radius: var(--radius);
+				border: 1px solid var(--border-color);
 				box-shadow: var(--box-shadow);
 			}
+			.reading-progress-bar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 3px;
+				width: 0%;
+				background: var(--accent);
+				z-index: 100;
+				transition: width 0.1s ease-out;
+			}
+			:global(.copy-code-btn) {
+				position: absolute;
+				top: 8px;
+				right: 8px;
+				display: inline-flex;
+				align-items: center;
+				gap: 5px;
+				padding: 4px 8px;
+				font-size: 12px;
+				font-weight: 500;
+				color: var(--text-muted);
+				background: var(--surface-color);
+				border: 1px solid var(--border-color);
+				border-radius: 6px;
+				cursor: pointer;
+				opacity: 0;
+				transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+				z-index: 5;
+			}
+			:global(pre:hover .copy-code-btn) {
+				opacity: 1;
+			}
+			:global(.copy-code-btn:hover) {
+				color: var(--title-color);
+				border-color: var(--accent);
+			}
+			:global(.copy-code-btn.copied) {
+				color: #10b981;
+				border-color: #10b981;
+			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
+				width: 820px;
+				max-width: 100%;
 				margin: auto;
-				padding: 1em;
+				padding: 0;
 				color: var(--text-color);
 			}
 			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
+				margin-bottom: 2rem;
+				padding: 0;
 				text-align: left;
-				line-height: 1.2;
+				line-height: 1.3;
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
@@ -351,6 +392,7 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 	</head>
 
 	<body>
+		<div id="reading-progress" class="reading-progress-bar"></div>
 		<Header />
 		<main>
 			<article>
@@ -481,6 +523,53 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 					});
 				}
 			}
+
+			// Barra de progreso de lectura
+			const progressBar = document.getElementById('reading-progress');
+			if (progressBar) {
+				window.addEventListener('scroll', () => {
+					const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+					if (totalHeight > 0) {
+						const progress = (window.scrollY / totalHeight) * 100;
+						progressBar.style.width = `${progress}%`;
+					}
+				}, { passive: true });
+			}
+
+			// Botón para copiar código en bloques <pre>
+			const isEn = window.location.pathname.startsWith('/en');
+			const copyLabel = isEn ? 'Copy' : 'Copiar';
+			const copiedLabel = isEn ? 'Copied!' : '¡Copiado!';
+
+			document.querySelectorAll('.prose pre').forEach((pre) => {
+				const wrapper = document.createElement('div');
+				wrapper.className = 'code-block-wrapper';
+				wrapper.style.position = 'relative';
+				pre.parentNode?.insertBefore(wrapper, pre);
+				wrapper.appendChild(pre);
+
+				const btn = document.createElement('button');
+				btn.className = 'copy-code-btn';
+				btn.type = 'button';
+				btn.innerText = copyLabel;
+				btn.setAttribute('aria-label', copyLabel);
+				wrapper.appendChild(btn);
+
+				btn.addEventListener('click', async () => {
+					const code = pre.querySelector('code')?.innerText || pre.innerText;
+					try {
+						await navigator.clipboard.writeText(code);
+						btn.innerText = copiedLabel;
+						btn.classList.add('copied');
+						setTimeout(() => {
+							btn.innerText = copyLabel;
+							btn.classList.remove('copied');
+						}, 2000);
+					} catch (e) {
+						btn.innerText = 'Error';
+					}
+				});
+			});
 		</script>
 	</body>
 </html>
