@@ -3,7 +3,8 @@ import { getCollection } from 'astro:content';
 export const prerender = true;
 
 export async function GET() {
-	const posts = await getCollection('blog');
+	const allPosts = await getCollection('blog');
+	const posts = allPosts.filter((post) => !import.meta.env.PROD || !post.data.draft);
 	const index = posts.map((post) => {
 		const isEnglish = post.id.startsWith('en/');
 		const cleanSlug = isEnglish ? post.id.replace(/^en\//, '') : post.id;

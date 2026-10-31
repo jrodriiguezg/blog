@@ -4,9 +4,9 @@ import BlogPost from '../../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
 
 export async function getStaticPaths() {
-	// Obtener solo las publicaciones que están en inglés (ID comienza con 'en/')
+	// Obtener solo las publicaciones que están en inglés (ID comienza con 'en/') que no sean borradores en producción
 	const posts = await getCollection('blog');
-	const englishPosts = posts.filter((post) => post.id.startsWith('en/'));
+	const englishPosts = posts.filter((post) => post.id.startsWith('en/') && (!import.meta.env.PROD || !post.data.draft));
 
 	return englishPosts.map((post) => ({
 		// Quitamos el prefijo 'en/' para resolver el slug limpio en la URL /en/blog/[slug]
@@ -20,7 +20,7 @@ const post = Astro.props;
 const { Content, headings } = await render(post);
 
 const allPosts = await getCollection('blog');
-const englishPosts = allPosts.filter((p) => p.id.startsWith('en/') && p.id !== post.id);
+const englishPosts = allPosts.filter((p) => p.id.startsWith('en/') && p.id !== post.id && (!import.meta.env.PROD || !p.data.draft));
 
 const relatedPosts = englishPosts
 	.map((p) => {
@@ -36,6 +36,6 @@ const relatedPosts = englishPosts
 	.map((item) => item.post);
 ---
 
-<BlogPost {...post.data} headings={headings} body={post.body} relatedPosts={relatedPosts}>
+<BlogPost {...post.data} id={post.id} headings={headings} body={post.body} relatedPosts={relatedPosts}>
 	<Content />
 </BlogPost>
