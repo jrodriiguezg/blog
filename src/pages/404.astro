@@ -1,0 +1,240 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<BaseHead
+			title={`404: Página no encontrada — ${SITE_TITLE}`}
+			description="La página que buscas no existe o ha sido movida."
+		/>
+		<meta name="robots" content="noindex, nofollow" />
+		<style>
+			.error-wrapper {
+				padding: 3.5rem 0 2rem 0;
+			}
+
+			.error-code {
+				font-family: var(--font-mono);
+				font-size: 0.95rem;
+				letter-spacing: 0.08em;
+				color: var(--text-muted);
+				margin-bottom: 0.85rem;
+			}
+
+			.error-title {
+				font-size: 1.85rem;
+				font-weight: 600;
+				color: var(--title-color);
+				margin: 0 0 0.85rem 0;
+				letter-spacing: -0.015em;
+			}
+
+			.error-desc {
+				font-size: 1rem;
+				line-height: 1.6;
+				color: var(--text-muted);
+				margin: 0 0 2rem 0;
+				max-width: var(--prose-width);
+			}
+
+			.error-actions {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 1.5rem;
+				margin-bottom: 2.5rem;
+			}
+
+			.action-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.35rem;
+				color: var(--text-color);
+				font-size: 0.92rem;
+				text-decoration: underline;
+				text-underline-offset: 4px;
+				text-decoration-color: var(--border-hover);
+				transition: color 0.15s ease, text-decoration-color 0.15s ease;
+			}
+
+			.action-link:hover {
+				color: var(--accent);
+				text-decoration-color: var(--accent);
+			}
+
+			.search-block {
+				margin-top: 1.5rem;
+				padding-top: 1.75rem;
+				border-top: 1px solid var(--border-color);
+				max-width: 420px;
+			}
+
+			.search-block-title {
+				font-size: 0.85rem;
+				font-weight: 500;
+				color: var(--text-muted);
+				margin-bottom: 0.75rem;
+			}
+
+			.search-box-btn {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				width: 100%;
+				padding: 0.65rem 0.85rem;
+				background-color: var(--surface-color);
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius);
+				color: var(--text-muted);
+				font-family: var(--font-sans);
+				font-size: 0.88rem;
+				cursor: pointer;
+				transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+			}
+
+			.search-box-btn:hover {
+				border-color: var(--border-hover);
+				background-color: var(--surface-hover);
+				color: var(--text-color);
+			}
+
+			.search-kbd {
+				margin-left: auto;
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				padding: 2px 6px;
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius-sm);
+				background-color: var(--bg-color);
+				color: var(--text-muted);
+			}
+
+			@media (max-width: 640px) {
+				.error-wrapper {
+					padding: 2rem 0 1.5rem 0;
+				}
+
+				.error-title {
+					font-size: 1.5rem;
+				}
+
+				.error-actions {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 0.85rem;
+				}
+
+				.search-block {
+					max-width: 100%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="error-wrapper" aria-labelledby="error-heading">
+				<div class="error-code">404</div>
+
+				<div id="content-es" class="lang-block">
+					<h1 id="error-heading" class="error-title">Página no encontrada</h1>
+					<p class="error-desc">El contenido que buscas no existe, ha sido movido o el enlace es incorrecto.</p>
+					<div class="error-actions">
+						<a href="/" class="action-link">&larr; Volver al inicio</a>
+						<a href="/" class="action-link">Ver todos los artículos</a>
+					</div>
+					<div class="search-block">
+						<div class="search-block-title">¿Buscas algo específico?</div>
+						<button
+							type="button"
+							class="search-box-btn"
+							data-open-search
+							aria-label="Abrir buscador del blog"
+						>
+							<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="11" cy="11" r="8"></circle>
+								<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+							</svg>
+							<span>Buscar artículos, tags...</span>
+							<kbd class="search-kbd">Ctrl K</kbd>
+						</button>
+					</div>
+				</div>
+
+				<div id="content-en" class="lang-block" style="display: none;">
+					<h1 class="error-title">Page not found</h1>
+					<p class="error-desc">The content you are looking for does not exist, has been moved, or the link is incorrect.</p>
+					<div class="error-actions">
+						<a href="/en" class="action-link">&larr; Back to home</a>
+						<a href="/en" class="action-link">View all articles</a>
+					</div>
+					<div class="search-block">
+						<div class="search-block-title">Looking for something specific?</div>
+						<button
+							type="button"
+							class="search-box-btn"
+							data-open-search
+							aria-label="Open blog search"
+						>
+							<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="11" cy="11" r="8"></circle>
+								<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+							</svg>
+							<span>Search posts, tags...</span>
+							<kbd class="search-kbd">Ctrl K</kbd>
+						</button>
+					</div>
+				</div>
+			</section>
+		</main>
+		<Footer />
+
+		<script is:inline>
+			(() => {
+				const pathname = window.location.pathname;
+				const isEn = pathname === '/en' || pathname.startsWith('/en/');
+
+				if (isEn) {
+					document.documentElement.lang = 'en';
+					document.title = '404: Page not found — jrodriiguezg.link';
+
+					const esBlock = document.getElementById('content-es');
+					const enBlock = document.getElementById('content-en');
+					if (esBlock) esBlock.style.display = 'none';
+					if (enBlock) enBlock.style.display = 'block';
+
+					// Sincronizar el selector de idioma de la cabecera
+					const langToggle = document.querySelector('.lang-toggle');
+					if (langToggle) {
+						langToggle.textContent = 'ES';
+						langToggle.setAttribute('href', '/');
+						langToggle.setAttribute('title', 'Cambiar a Español');
+						langToggle.setAttribute('data-lang', 'es');
+					}
+
+					// Sincronizar enlace del logo y navegación al idioma inglés
+					const logo = document.querySelector('.header-logo');
+					if (logo) logo.setAttribute('href', '/en');
+
+					const desktopNavLinks = document.querySelectorAll('.header-nav.desktop-nav a');
+					if (desktopNavLinks.length > 0) {
+						desktopNavLinks[0].setAttribute('href', '/en');
+					}
+
+					const mobileNavLinks = document.querySelectorAll('.header-nav.mobile-nav a');
+					if (mobileNavLinks.length > 0) {
+						mobileNavLinks[0].setAttribute('href', '/en');
+					}
+				} else {
+					document.documentElement.lang = 'es';
+					document.title = '404: Página no encontrada — jrodriiguezg.link';
+				}
+			})();
+		</script>
+	</body>
+</html>
