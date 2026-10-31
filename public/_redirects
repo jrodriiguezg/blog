@@ -1,7 +1,0 @@
-# Cloudflare Pages 301 Redirects
-/blog/category/homelab /blog/category/infraestructura 301
-/blog/category/homelab/ /blog/category/infraestructura/ 301
-/en/blog/category/homelab /en/blog/category/infraestructura 301
-/en/blog/category/homelab/ /en/blog/category/infraestructura/ 301
-/en/blog/category/infrastructure /en/blog/category/infraestructura 301
-/en/blog/category/infrastructure/ /en/blog/category/infraestructura/ 301
