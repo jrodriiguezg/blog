@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../../../components/BaseHead.astro';
 import Header from '../../../../components/Header.astro';
 import Footer from '../../../../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../../../consts';
+import { SITE_TITLE_EN, SITE_DESCRIPTION_EN } from '../../../../consts';
 import FormattedDate from '../../../../components/FormattedDate.astro';
 
 export async function getStaticPaths() {
@@ -49,7 +49,7 @@ const categoryTitles: Record<string, string> = {
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={`#${tag} - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<BaseHead title={`#${tag} - ${SITE_TITLE_EN}`} description={SITE_DESCRIPTION_EN} />
 		<style>
 			.tag-header {
 				margin-bottom: 2rem;
