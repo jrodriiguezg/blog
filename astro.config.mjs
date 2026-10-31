@@ -7,7 +7,9 @@ import cloudflare from "@astrojs/cloudflare";
 
 // Plugin personalizado para transformar bloques de código 'mermaid' en <div class="mermaid"> en tiempo de compilación
 function remarkMermaid() {
+	/** @param {any} tree */
 	return (tree) => {
+		/** @param {any} node */
 		function walk(node) {
 			if (node.type === "code" && node.lang === "mermaid") {
 				node.type = "html";
@@ -27,6 +29,11 @@ export default defineConfig({
 	redirects: {
 		"/about": "https://jrodriiguezg.link",
 		"/en/about": "https://jrodriiguezg.link",
+		"/blog/category/homelab": "/blog/category/infraestructura",
+		"/en/blog/category/homelab": "/en/blog/category/infraestructura",
+		"/en/blog/category/infrastructure": "/en/blog/category/infraestructura",
+		"/blog/category/mi-pc": "/blog/category/workstation",
+		"/en/blog/category/mi-pc": "/en/blog/category/workstation",
 	},
 	i18n: {
 		defaultLocale: "es",
@@ -39,7 +46,12 @@ export default defineConfig({
 	markdown: {
 		remarkPlugins: [remarkMermaid],
 	},
-	integrations: [mdx(), sitemap()],
+	integrations: [
+		mdx(),
+		sitemap({
+			filter: (page) => !page.includes('/404'),
+		}),
+	],
 	adapter: cloudflare({
 		platformProxy: {
 			enabled: true,

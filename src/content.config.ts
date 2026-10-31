@@ -14,14 +14,15 @@ const blog = defineCollection({
 		updatedDate: z.coerce.date().optional(),
 		heroImage: z.string().optional(),
 		pinned: z.boolean().optional(),
+		draft: z.boolean().optional().default(false),
 		// Categorías principales
 		category: z.enum([
 			"proyectos",
 			"divulgacion",
 			"miscelanea",
-			"mi-pc",
+			"workstation",
 			"configuraciones",
-			"homelab",
+			"infraestructura",
 		]).default("miscelanea"),
 		// Etiquetas (tags)
 		tags: z.array(z.string()).default([]),
