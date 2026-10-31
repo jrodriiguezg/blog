@@ -1,0 +1,80 @@
+/**
+ * Design Tokens - Editorial & Technical Aesthetic
+ * Default: Dark Mode (#111214)
+ * Accent: Muted Steel Blue (#7d9bb8)
+ */
+
+:root,
+html.dark {
+	/* Dark Palette (Default) */
+	--bg-color: #111214;
+	--surface-color: #17181a;
+	--surface-hover: #1f2023;
+	--border-color: #26282b;
+	--border-hover: #36383d;
+	--text-color: #e6e6e3;
+	--text-muted: #8d9096;
+	--title-color: #f4f4f2;
+	--accent: #7d9bb8;
+	--accent-hover: #9cb5ce;
+	--code-bg: #17181a;
+	--code-border: #26282b;
+	--selection-bg: #222b35;
+	--selection-text: #f4f4f2;
+
+	/* Semantic states */
+	--tag-bg: transparent;
+	--tag-color: #8d9096;
+	--tag-border: #26282b;
+	--pinned-color: #7d9bb8;
+
+	/* Typography */
+	--font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+	/* Geometry */
+	--radius: 4px;
+	--radius-sm: 3px;
+	--box-shadow: none;
+	--box-shadow-hover: none;
+
+	/* Container Layout */
+	--container-width: 760px;
+	--prose-width: 68ch;
+
+	/* Spacing scale */
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+	--space-5: 20px;
+	--space-6: 24px;
+	--space-8: 32px;
+	--space-10: 40px;
+	--space-12: 48px;
+	--space-16: 64px;
+}
+
+html.light {
+	/* Light Palette (Sober & High Contrast) */
+	--bg-color: #fafaf8;
+	--surface-color: #f2f2ef;
+	--surface-hover: #eaeae5;
+	--border-color: #e2e2de;
+	--border-hover: #cfcfcb;
+	--text-color: #1a1a1a;
+	--text-muted: #666663;
+	--title-color: #0d0d0d;
+	--accent: #3a6288;
+	--accent-hover: #26435e;
+	--code-bg: #f2f2ef;
+	--code-border: #e2e2de;
+	--selection-bg: #dbe7f2;
+	--selection-text: #0d0d0d;
+
+	/* Semantic states */
+	--tag-bg: transparent;
+	--tag-color: #666663;
+	--tag-border: #e2e2de;
+	--pinned-color: #3a6288;
+}
