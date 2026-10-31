@@ -16,11 +16,15 @@
 		"@astrojs/mdx": "4.3.13",
 		"@astrojs/rss": "4.0.14",
 		"@astrojs/sitemap": "3.6.1",
+		"@fontsource/inter": "^5.3.0",
+		"@fontsource/jetbrains-mono": "^5.3.0",
 		"astro": "5.16.9",
 		"mermaid": "^11.15.0",
 		"typescript": "5.9.3"
 	},
 	"devDependencies": {
+		"@resvg/resvg-js": "^2.6.2",
+		"satori": "^0.63.2",
 		"wrangler": "4.56.0"
 	},
 	"engines": {

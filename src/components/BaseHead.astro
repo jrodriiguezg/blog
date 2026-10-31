@@ -7,34 +7,50 @@ interface Props {
 	title: string;
 	description: string;
 	image?: string;
+	imageAlt?: string;
+	type?: 'website' | 'article';
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = '/brand-logo.png' } = Astro.props;
+const {
+	title,
+	description,
+	image = '/og/default.png?v=2',
+	imageAlt = title,
+	type = 'website',
+} = Astro.props;
+
+// Asegurar URL absoluta respecto al dominio canónico de Astro.site
+const ogImageURL = new URL(image, Astro.site).toString();
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/jpeg" href="/favicon.jpg" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta name="theme-color" content="#111214" />
 
-<!-- Theme Setup Script (Anti-Flash) -->
+<!-- Theme Setup Script (Anti-Flash, Default: Dark) -->
 <script is:inline>
 	const theme = (() => {
 		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
 			return localStorage.getItem('theme');
 		}
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			return 'dark';
+		if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+			return 'light';
 		}
-		return 'light';
+		return 'dark';
 	})();
 
-	if (theme === 'dark') {
-		document.documentElement.classList.add('dark');
-	} else {
+	if (theme === 'light') {
+		document.documentElement.classList.add('light');
 		document.documentElement.classList.remove('dark');
+	} else {
+		document.documentElement.classList.add('dark');
+		document.documentElement.classList.remove('light');
 	}
 </script>
 
@@ -88,15 +104,19 @@ const { title, description, image = '/brand-logo.png' } = Astro.props;
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={ogImageURL} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:url" content={canonicalURL} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<meta property="twitter:image" content={ogImageURL} />
+<meta property="twitter:image:alt" content={imageAlt} />
