@@ -119,18 +119,10 @@ const titleText = lang === 'en' ? 'On this page' : 'En esta página';
         activeId = headingElements[0].id;
       }
 
-      const tocContainer = document.querySelector('.toc-sidebar');
       tocLinks.forEach((link) => {
         const matches = link.getAttribute('data-toc-slug') === activeId;
         if (link.classList.contains('active') !== matches) {
           link.classList.toggle('active', matches);
-          if (matches && tocContainer) {
-            const containerRect = tocContainer.getBoundingClientRect();
-            const linkRect = link.getBoundingClientRect();
-            if (linkRect.top < containerRect.top || linkRect.bottom > containerRect.bottom) {
-              link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-            }
-          }
         }
       });
     }

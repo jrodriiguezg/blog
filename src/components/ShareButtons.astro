@@ -114,15 +114,14 @@ const copiedLabel = lang === 'en' ? 'Link copied!' : '¡Enlace copiado!';
   }
 
   .share-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-1px);
+    border-color: var(--border-hover);
+    color: var(--title-color);
   }
 
   .share-btn.copied {
-    border-color: #10b981;
-    color: #10b981;
-    background: rgba(16, 185, 129, 0.08);
+    border-color: var(--accent);
+    color: var(--title-color);
+    background: var(--surface-color);
   }
 
   @media (max-width: 640px) {

@@ -21,13 +21,22 @@ if (cleanHref === '/' || cleanHref === '') {
 <a href={href} class:list={[className, { active: isActive }]} {...props}>
 	<slot />
 </a>
+
 <style>
 	a {
 		display: inline-block;
-		text-decoration: none;
+		color: var(--text-muted);
+		text-decoration: none !important;
+		transition: color 0.15s ease;
+	}
+	a:hover {
+		color: var(--title-color);
 	}
 	a.active {
-		font-weight: bolder;
-		text-decoration: underline;
+		color: var(--title-color);
+		text-decoration: underline !important;
+		text-decoration-thickness: 1px !important;
+		text-underline-offset: 6px !important;
+		text-decoration-color: var(--title-color) !important;
 	}
 </style>

@@ -1,5 +1,4 @@
 ---
-// Props para personalizar el titulo de la pestaña
 export interface Props {
   title?: string;
 }
@@ -9,70 +8,97 @@ const { title = "code" } = Astro.props;
 
 <div class="code-window-container">
   <div class="code-window-header">
-    <div class="code-window-tab">
+    <div class="code-window-tab" title={title}>
       <span class="code-window-title">{title}</span>
     </div>
   </div>
   <div class="code-window-body">
-    <!-- El slot renderiza el bloque de codigo markdown que envuelvas -->
     <slot />
   </div>
 </div>
 
 <style>
-  /* Contenedor principal de la ventana de código */
   .code-window-container {
-    background-color: #1e1e24;
-    border: 1px solid #2d3139;
-    border-radius: 6px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-    margin: 1.5rem 0;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    margin: 1.75rem 0;
+    overflow: hidden;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .code-window-header {
+    background-color: var(--surface-hover);
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--border-color);
+    height: 34px;
+    padding-left: 0.5rem;
+    min-width: 0;
     overflow: hidden;
   }
 
-  /* Barra de titulo superior (estilo pestaña de editor) */
-  .code-window-header {
-    background-color: #16181d;
-    display: flex;
-    align-items: flex-end;
-    border-bottom: 1px solid #2d3139;
-    height: 38px;
-    padding-left: 0.75rem;
-  }
-
-  /* Pestaña activa (Tab) */
   .code-window-tab {
-    background-color: #1e1e24;
-    border-left: 1px solid #2d3139;
-    border-right: 1px solid #2d3139;
-    border-top: 2px solid #38bdf8; /* Línea azul de pestaña activa */
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    padding: 0 1.25rem;
+    background-color: var(--surface-color);
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    border-top: 2px solid var(--accent);
+    border-top-left-radius: var(--radius-sm);
+    border-top-right-radius: var(--radius-sm);
+    padding: 0 0.85rem;
     display: flex;
     align-items: center;
     height: calc(100% + 1px);
     margin-bottom: -1px;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
   }
 
-  /* Texto del titulo (nombre del archivo) */
   .code-window-title {
-    color: #abb2bf;
-    font-family: monospace;
-    font-size: 0.85rem;
+    color: var(--text-color);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
     user-select: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
 
-  /* Area donde se inyecta el codigo */
   .code-window-body {
-    padding: 1.25rem;
-    background-color: #1e1e24;
+    padding: 0.85rem 1rem;
+    background-color: var(--surface-color);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    font-size: 0.88rem;
   }
 
-  /* Ajustar los bloques <pre> generados por Astro para que encajen */
   .code-window-body :global(pre) {
     margin: 0 !important;
     background: transparent !important;
+    border: none !important;
     padding: 0 !important;
+    overflow-x: auto !important;
+    max-width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    .code-window-header {
+      height: 30px;
+      padding-left: 0.4rem;
+    }
+    .code-window-tab {
+      padding: 0 0.65rem;
+    }
+    .code-window-title {
+      font-size: 0.74rem;
+    }
+    .code-window-body {
+      padding: 0.75rem 0.65rem;
+      font-size: 0.82rem;
+    }
   }
 </style>

@@ -10,15 +10,16 @@ import BackToTop from '../components/BackToTop.astro';
 import Lightbox from '../components/Lightbox.astro';
 import ShareButtons from '../components/ShareButtons.astro';
 import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/ui';
-import { GISCUS_REPO, GISCUS_REPO_ID, GISCUS_CATEGORY, GISCUS_CATEGORY_ID } from '../consts';
+import { GISCUS_REPO, GISCUS_REPO_ID, GISCUS_CATEGORY, GISCUS_CATEGORY_ID, SHOW_COVERS } from '../consts';
 
 type Props = CollectionEntry<'blog'>['data'] & {
+	id?: string;
 	headings?: { depth: number; slug: string; text: string }[];
 	body?: string;
 	relatedPosts?: CollectionEntry<'blog'>[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, category, tags = [], headings = [], body = '', relatedPosts = [] } = Astro.props;
+const { id, title, description, pubDate, updatedDate, heroImage, category, tags = [], headings = [], body = '', relatedPosts = [] } = Astro.props;
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -37,124 +38,197 @@ const categoryTitles: Record<string, Record<string, string>> = {
 		proyectos: 'Proyectos',
 		divulgacion: 'Divulgación',
 		miscelanea: 'Miscelánea',
-		'mi-pc': 'Mi PC',
-		homelab: 'HomeLab',
+		workstation: 'Workstation',
+		infraestructura: 'Infraestructura',
 	},
 	en: {
 		proyectos: 'Projects',
 		divulgacion: 'Articles',
 		miscelanea: 'Miscellaneous',
-		'mi-pc': 'My PC',
-		homelab: 'HomeLab',
+		workstation: 'Workstation',
+		infraestructura: 'Infrastructure',
 	}
 };
 
 const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
+
+// Imagen social generada para Open Graph y Twitter Cards con cache-busting (?v=2)
+const ogImage = id ? `/og/${id}.png?v=2` : '/og/default.png?v=2';
+const ogImageAbsolute = new URL(ogImage, Astro.site).toString();
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	'headline': title,
+	'description': description,
+	'image': [ogImageAbsolute],
+	'datePublished': pubDate.toISOString(),
+	...(updatedDate ? { 'dateModified': updatedDate.toISOString() } : {}),
+	'author': {
+		'@type': 'Person',
+		'name': 'jrodriiguezg',
+		'url': 'https://jrodriiguezg.link',
+	},
+	'mainEntityOfPage': {
+		'@type': 'WebPage',
+		'@id': new URL(Astro.url.pathname, Astro.site).toString(),
+	},
+};
 ---
 
 <html lang={lang}>
 	<head>
-		<BaseHead title={title} description={description} image={heroImage} />
+		<BaseHead title={title} description={description} image={ogImage} imageAlt={title} type="article" />
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 		<style>
 			.post-page-main {
 				width: 100%;
-				max-width: 1280px;
+				max-width: var(--container-width);
 				margin: 0 auto;
-				padding: 2.5rem 1.5rem 5rem 1.5rem;
+				padding: 3rem 1.25rem 5rem 1.25rem;
+				position: relative;
+				box-sizing: border-box;
 			}
-			.post-layout-grid {
-				display: grid;
-				grid-template-columns: minmax(0, 1fr) 240px;
-				gap: 4rem;
-				align-items: start;
-			}
+
 			.post-main-column {
 				min-width: 0;
+				max-width: 100%;
 			}
+
+			/* Sidebar TOC en gutter derecho para pantallas panorámicas */
 			.post-sidebar-aside {
-				position: sticky;
-				top: 5.5rem;
+				display: none;
 			}
-			@media (max-width: 1024px) {
-				.post-page-main {
-					max-width: 860px;
-				}
-				.post-layout-grid {
-					grid-template-columns: minmax(0, 1fr);
-					gap: 2rem;
-				}
+
+			@media (min-width: 1240px) {
 				.post-sidebar-aside {
-					display: none;
+					display: block;
+					position: absolute;
+					top: 3rem;
+					left: calc(100% + 2.5rem);
+					width: 220px;
 				}
 			}
-			.date-row {
+
+			@media (max-width: 720px) {
+				.post-page-main {
+					padding: 1.75rem 1rem 3.5rem 1rem;
+				}
+				.post-title {
+					font-size: 1.7rem;
+				}
+			}
+
+			@media (max-width: 480px) {
+				.post-page-main {
+					padding: 1.25rem 0.85rem 3rem 0.85rem;
+				}
+				.post-title {
+					font-size: 1.45rem;
+				}
+			}
+
+			/* Cabecera del artículo */
+			.post-header {
+				margin-bottom: 2rem;
+			}
+
+			.post-meta-row {
 				display: flex;
 				align-items: center;
 				flex-wrap: wrap;
 				gap: 0.5rem;
-				margin-bottom: 0.5rem;
-				font-size: 0.9rem;
+				margin-bottom: 0.65rem;
+				font-family: var(--font-mono);
+				font-size: 0.82rem;
 				color: var(--text-muted);
 			}
+
 			.meta-dot {
 				color: var(--border-color);
+				user-select: none;
 			}
+
 			.reading-badge {
 				color: var(--text-muted);
-				font-size: 0.88rem;
 			}
-			.related-section {
-				margin-top: 3.5rem;
-				padding-top: 2rem;
-				border-top: 1px solid var(--border-color);
+
+			.last-updated-on {
+				font-style: normal;
+				color: var(--text-muted);
 			}
-			.related-title {
-				font-size: 1.25rem;
-				font-weight: 700;
-				margin-bottom: 1.25rem;
-				color: var(--title-color);
-			}
-			.related-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-				gap: 1.25rem;
-			}
-			.related-card {
-				display: flex;
-				flex-direction: column;
-				background: var(--surface-color);
-				border: 1px solid var(--border-color);
-				border-radius: var(--radius);
-				padding: 1.25rem;
-				text-decoration: none;
-				color: inherit;
-				transition: border-color 0.2s ease, transform 0.2s ease;
-			}
-			.related-card:hover {
-				border-color: var(--accent);
-				transform: translateY(-2px);
-			}
-			.related-card-title {
-				font-size: 1rem;
+
+			.post-title {
+				font-size: 2.1rem;
 				font-weight: 600;
+				line-height: 1.25;
 				color: var(--title-color);
-				margin-bottom: 0.5rem;
-				line-height: 1.35;
-				transition: color 0.2s ease;
+				margin: 0 0 1rem 0;
+				letter-spacing: -0.02em;
 			}
-			.related-card:hover .related-card-title {
-				color: var(--accent);
+
+			/* Taxonomías del post: Categoría y Etiquetas */
+			.post-taxonomies {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 1rem;
+				margin-top: 0.75rem;
+				padding-bottom: 1.5rem;
+				border-bottom: 1px solid var(--border-color);
 			}
-			.related-card-meta {
+
+			.post-category {
+				font-family: var(--font-mono);
+				font-size: 0.78rem;
+				font-weight: 500;
+				color: var(--text-muted);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				text-decoration: none !important;
+				background: none;
+				border: none;
+				padding: 0;
+				transition: color 0.15s ease;
+			}
+
+			.post-category:hover {
+				color: var(--title-color);
+				text-decoration: underline !important;
+				text-underline-offset: 3px !important;
+			}
+
+			.post-tags {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.65rem;
+			}
+
+			.post-tag {
+				font-family: var(--font-mono);
 				font-size: 0.8rem;
 				color: var(--text-muted);
-				margin-top: auto;
+				text-decoration: none !important;
+				background: none;
+				border: none;
+				padding: 0;
+				transition: color 0.15s ease;
 			}
+
+			.post-tag:hover {
+				color: var(--accent);
+				text-decoration: underline !important;
+				text-underline-offset: 3px !important;
+			}
+
+			/* Portada opcional (detrás del flag SHOW_COVERS) */
 			.hero-image {
 				width: 100%;
 				max-width: 100%;
-				margin: 0 auto 2.5rem auto;
+				margin: 0 auto 2rem auto;
 			}
+
 			.hero-image img {
 				display: block;
 				width: 100%;
@@ -162,21 +236,36 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 				aspect-ratio: 21 / 9;
 				object-fit: cover;
 				object-position: center;
-				max-height: 440px;
+				max-height: 380px;
 				border-radius: var(--radius);
 				border: 1px solid var(--border-color);
-				box-shadow: var(--box-shadow);
+				box-shadow: none;
 			}
+
+			/* Imágenes dentro del contenido del post */
+			.prose :global(img) {
+				max-width: 100%;
+				height: auto;
+				display: block;
+				margin: 2rem auto;
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius);
+				box-shadow: none;
+			}
+
+			/* Barra de progreso de lectura */
 			.reading-progress-bar {
 				position: fixed;
 				top: 0;
 				left: 0;
-				height: 3px;
+				height: 2px;
 				width: 0%;
 				background: var(--accent);
 				z-index: 100;
 				transition: width 0.1s ease-out;
 			}
+
+			/* Botón para copiar código en pre */
 			:global(.copy-code-btn) {
 				position: absolute;
 				top: 8px;
@@ -184,316 +273,319 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 				display: inline-flex;
 				align-items: center;
 				gap: 5px;
-				padding: 4px 8px;
-				font-size: 12px;
+				padding: 3px 8px;
+				font-family: var(--font-mono);
+				font-size: 11px;
 				font-weight: 500;
 				color: var(--text-muted);
 				background: var(--surface-color);
 				border: 1px solid var(--border-color);
-				border-radius: 6px;
+				border-radius: var(--radius-sm);
 				cursor: pointer;
 				opacity: 0;
-				transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+				transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 				z-index: 5;
 			}
+
 			:global(pre:hover .copy-code-btn) {
 				opacity: 1;
 			}
+
 			:global(.copy-code-btn:hover) {
+				color: var(--title-color);
+				border-color: var(--border-hover);
+			}
+
+			:global(.copy-code-btn.copied) {
 				color: var(--title-color);
 				border-color: var(--accent);
 			}
-			:global(.copy-code-btn.copied) {
-				color: #10b981;
-				border-color: #10b981;
+
+			/* Artículos relacionados - Lista editorial sobria */
+			.related-section {
+				margin-top: 3.5rem;
+				padding-top: 2rem;
+				border-top: 1px solid var(--border-color);
 			}
-			.prose {
-				width: 100%;
-				max-width: 100%;
-				margin: auto;
+
+			.related-title {
+				font-size: 1.15rem;
+				font-weight: 600;
+				margin-bottom: 1rem;
+				color: var(--title-color);
+				letter-spacing: -0.01em;
+			}
+
+			.related-list {
+				list-style: none;
 				padding: 0;
-				color: var(--text-color);
-				font-size: 1.05rem;
+				margin: 0;
+				border-top: 1px solid var(--border-color);
 			}
-			.title {
-				margin-bottom: 2rem;
-				padding: 0;
-				text-align: left;
-				line-height: 1.3;
+
+			.related-item {
+				padding: 0.85rem 0;
+				border-bottom: 1px solid var(--border-color);
 			}
-			.title h1 {
-				font-size: 2.6rem;
-				line-height: 1.25;
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-			.post-metadata {
+
+			.related-item-link {
 				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				justify-content: flex-start;
-				gap: 0.75rem;
-				margin-top: 0.5rem;
-				margin-bottom: 1.5rem;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 1rem;
+				text-decoration: none !important;
+				color: var(--title-color);
+				transition: color 0.15s ease;
 			}
-			.category-badge {
-				display: inline-block;
-				padding: 0.25rem 0.75rem;
-				font-size: 0.8rem;
-				font-weight: 700;
-				text-transform: uppercase;
-				border-radius: 6px;
-				background: rgba(var(--gray-light), 50%);
-				color: var(--text-color);
-				border: 1px solid rgba(var(--gray), 15%);
-				text-decoration: none;
-				transition: background-color 0.2s, border-color 0.2s;
-			}
-			.category-badge:hover {
-				background: rgba(var(--gray-light), 80%);
-			}
-			.category-badge.proyectos {
-				background: rgba(59, 130, 246, 15%);
-				color: #3b82f6;
-				border-color: rgba(59, 130, 246, 30%);
-			}
-			.category-badge.proyectos:hover {
-				background: rgba(59, 130, 246, 25%);
-			}
-			.category-badge.divulgacion {
-				background: rgba(16, 185, 129, 15%);
-				color: #10b981;
-				border-color: rgba(16, 185, 129, 30%);
-			}
-			.category-badge.divulgacion:hover {
-				background: rgba(16, 185, 129, 25%);
-			}
-			.category-badge.miscelanea {
-				background: rgba(107, 114, 128, 15%);
-				color: #6b7280;
-				border-color: rgba(107, 114, 128, 30%);
-			}
-			.category-badge.miscelanea:hover {
-				background: rgba(107, 114, 128, 25%);
-			}
-			.category-badge.mi-pc {
-				background: rgba(245, 158, 11, 15%);
-				color: #f59e0b;
-				border-color: rgba(245, 158, 11, 30%);
-			}
-			.category-badge.mi-pc:hover {
-				background: rgba(245, 158, 11, 25%);
-			}
-			.category-badge.configuraciones {
-				background: rgba(139, 92, 246, 15%);
-				color: #8b5cf6;
-				border-color: rgba(139, 92, 246, 30%);
-			}
-			.category-badge.configuraciones:hover {
-				background: rgba(139, 92, 246, 25%);
-			}
-			.category-badge.homelab {
-				background: rgba(20, 184, 166, 15%);
-				color: #14b8a6;
-				border-color: rgba(20, 184, 166, 30%);
-			}
-			.category-badge.homelab:hover {
-				background: rgba(20, 184, 166, 25%);
-			}
-			.tag-badge {
-				font-size: 0.85rem;
+
+			.related-item-link:hover .related-item-title {
 				color: var(--accent);
-				font-weight: 500;
-				text-decoration: none;
-			}
-			.tag-badge:hover {
 				text-decoration: underline;
-				color: var(--accent-dark);
+				text-underline-offset: 3px;
 			}
 
-			/* Estilos para Diagramas de Mermaid */
-			.mermaid {
-				width: 100%;
-				background: transparent !important;
-				border: none !important;
-				border-radius: 0 !important;
-				padding: 0 !important;
-				box-shadow: none !important;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				overflow-x: auto;
-				margin: 2.5rem 0;
-			}
-			.mermaid svg {
-				max-width: 100% !important;
-				height: auto !important;
-				min-width: 600px; /* Evita que el diagrama se encoja a tamaños ilegibles en pantallas medianas/pequeñas */
+			.related-item-title {
+				font-size: 0.95rem;
+				font-weight: 500;
+				margin: 0;
+				line-height: 1.4;
+				color: var(--title-color);
+				transition: color 0.15s ease;
 			}
 
-			/* Breakout panorámico para pantallas grandes (alineado con la imagen de portada de 1020px) */
-			@media (min-width: 1060px) {
-				.mermaid {
-					width: 1020px !important;
-					max-width: 1020px !important;
-					margin-left: calc(50% - 510px) !important;
-					margin-right: calc(50% - 510px) !important;
-					padding: 0 !important;
-				}
-				.mermaid svg {
-					min-width: 800px;
+			.related-item-date {
+				font-family: var(--font-mono);
+				font-size: 0.76rem;
+				color: var(--text-muted);
+				white-space: nowrap;
+			}
+
+			@media (max-width: 640px) {
+				.related-item-link {
+					flex-direction: column;
+					gap: 0.25rem;
 				}
 			}
 		</style>
 		<style is:global>
-			/* Estilos de Comentarios (Completamente Planos, Transparentes y Globales) */
+			/* Diagramas de Mermaid */
+			.mermaid {
+				width: 100%;
+				max-width: 100%;
+				margin: 2.25rem 0;
+				padding: 1.25rem;
+				background: var(--surface-color);
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				overflow-x: auto;
+				-webkit-overflow-scrolling: touch;
+				box-sizing: border-box;
+				font-family: var(--font-mono);
+				font-size: 0.82rem;
+				line-height: 1.5;
+				white-space: pre-wrap;
+				min-height: 120px;
+				transition: background-color 0.2s ease, border-color 0.2s ease;
+			}
+
+			.mermaid.mermaid-rendered {
+				white-space: normal;
+			}
+
+			.mermaid svg {
+				max-width: 100% !important;
+				height: auto !important;
+				display: block;
+				margin: 0 auto;
+			}
+
+			/* Fallback en caso de error de sintaxis en el diagrama */
+			.mermaid-fallback {
+				width: 100%;
+				margin: 0;
+				padding: 1rem;
+				background: transparent;
+				border: none;
+				border-radius: 0;
+				color: var(--text-color);
+				font-family: var(--font-mono);
+				font-size: 0.8rem;
+				overflow-x: auto;
+				white-space: pre;
+			}
+
+			.mermaid-error-badge {
+				display: block;
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				color: var(--text-muted);
+				margin-bottom: 0.5rem;
+			}
+
+			/* Estilos de Comentarios (Planos y basados en tokens) */
 			.comments-divider {
 				margin: 3.5rem 0 2rem 0;
 				border: 0;
-				border-top: 1px solid rgba(255, 255, 255, 0.1);
+				border-top: 1px solid var(--border-color);
 			}
+
 			.comments-section {
 				margin-top: 2rem;
 			}
+
 			.comments-section h3 {
 				margin-bottom: 1.5rem;
-				font-size: 1.5rem;
+				font-size: 1.3rem;
 				color: var(--title-color);
+				letter-spacing: -0.01em;
 			}
+
 			.comments-list {
 				display: flex;
 				flex-direction: column;
 				gap: 1.5rem;
 				margin-bottom: 2.5rem;
 			}
+
 			.no-comments {
-				color: rgb(var(--gray));
+				color: var(--text-muted);
 				font-style: italic;
 				margin-bottom: 1.5rem;
-				font-size: 0.95rem;
+				font-size: 0.9rem;
 			}
+
 			.comment-item {
 				background: transparent;
-				border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+				border-bottom: 1px solid var(--border-color);
 				padding-bottom: 1.25rem;
 			}
+
 			.comment-header {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
 				margin-bottom: 0.6rem;
 			}
+
 			.comment-author-info {
 				display: flex;
 				align-items: center;
 				gap: 0.75rem;
 			}
+
 			.comment-avatar {
-				width: 32px;
-				height: 32px;
-				background: #1e1e24;
-				border: 1px solid rgba(255, 255, 255, 0.1);
-				border-radius: 50%;
+				width: 30px;
+				height: 30px;
+				background: var(--surface-color);
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius-sm);
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: 0.85rem;
-				font-weight: 700;
+				font-size: 0.8rem;
+				font-weight: 600;
 				color: var(--title-color);
 			}
+
 			.comment-author-name {
 				font-weight: 600;
 				color: var(--title-color);
-				font-size: 0.95rem;
+				font-size: 0.92rem;
 			}
+
 			.comment-date {
-				font-size: 0.8rem;
-				color: rgb(var(--gray));
+				font-family: var(--font-mono);
+				font-size: 0.75rem;
+				color: var(--text-muted);
 			}
+
 			.comment-body {
 				font-size: 0.95rem;
 				line-height: 1.6;
 				color: var(--text-color);
-				padding-left: 2.5rem;
+				padding-left: 2.25rem;
 				word-break: break-word;
 			}
 			
-			/* Formulario de Comentarios */
+			/* Formulario de comentarios */
 			.comment-form {
-				background: transparent;
-				border: 1px solid rgba(255, 255, 255, 0.08);
-				border-radius: 8px;
-				padding: 1.5rem;
-				margin-top: 3rem;
+				background: var(--surface-color);
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius);
+				padding: 1.25rem;
+				margin-top: 2.5rem;
 			}
+
 			.comment-form h4 {
 				margin-top: 0;
-				margin-bottom: 1.25rem;
-				font-size: 1.15rem;
+				margin-bottom: 1rem;
+				font-size: 1.05rem;
 				color: var(--title-color);
 			}
+
 			.form-group {
-				margin-bottom: 1.25rem;
+				margin-bottom: 1rem;
 			}
+
 			.form-group label {
 				display: block;
-				margin-bottom: 0.4rem;
-				font-size: 0.85rem;
-				font-weight: 600;
-				color: var(--title-color);
+				margin-bottom: 0.35rem;
+				font-size: 0.82rem;
+				font-weight: 500;
+				color: var(--text-muted);
 			}
+
 			.form-group input,
 			.form-group textarea {
 				width: 100%;
-				background: #09090b;
-				border: 1px solid rgba(255, 255, 255, 0.1);
-				border-radius: 6px;
-				padding: 0.6rem 0.8rem;
-				color: #ffffff;
+				background: var(--bg-color);
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius-sm);
+				padding: 0.5rem 0.75rem;
+				color: var(--text-color);
 				font-family: inherit;
-				font-size: 0.95rem;
-				transition: border-color 0.2s ease, outline 0.2s ease;
+				font-size: 0.9rem;
+				transition: border-color 0.15s ease;
 			}
+
 			.form-group input:focus,
 			.form-group textarea:focus {
 				border-color: var(--accent);
-				outline: 1px solid var(--accent);
+				outline: 2px solid var(--accent);
+				outline-offset: 1px;
 			}
+
 			.submit-btn {
-				background: var(--accent);
-				color: #ffffff;
-				border: none;
-				border-radius: 6px;
-				padding: 0.7rem 1.25rem;
-				font-size: 0.95rem;
-				font-weight: 600;
+				background: var(--surface-hover);
+				color: var(--title-color);
+				border: 1px solid var(--border-color);
+				border-radius: var(--radius-sm);
+				padding: 0.5rem 1rem;
+				font-size: 0.88rem;
+				font-weight: 500;
 				cursor: pointer;
-				transition: background-color 0.2s ease;
+				transition: border-color 0.15s ease, color 0.15s ease;
 			}
+
 			.submit-btn:hover {
-				background: var(--accent-dark);
+				border-color: var(--border-hover);
+				color: var(--title-color);
 			}
+
 			.submit-btn:disabled {
-				background: #27272a;
-				color: #71717a;
+				opacity: 0.5;
 				cursor: not-allowed;
 			}
+
 			.comment-message {
-				margin-top: 1rem;
-				font-size: 0.9rem;
-				font-weight: 500;
-			}
-			.comment-message.success {
-				color: #10b981;
-			}
-			.comment-message.error {
-				color: #ef4444;
+				margin-top: 0.75rem;
+				font-size: 0.85rem;
+				color: var(--text-muted);
 			}
 		</style>
 	</head>
@@ -502,86 +594,96 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 		<ReadingProgress />
 		<Header />
 		<main class="post-page-main">
-			<div class="post-layout-grid">
+			<div class="post-layout-wrapper">
 				<article class="post-main-column">
-					<div class="hero-image">
-						{heroImage && <img width={1020} height={510} src={heroImage} alt="" />}
-					</div>
-					<div class="prose">
-						<div class="title">
-							<div class="date-row">
-								<FormattedDate date={pubDate} />
-								<span class="meta-dot">·</span>
-								<span class="reading-badge">{readingTime}</span>
-								{
-									updatedDate && (
+					{SHOW_COVERS && heroImage && (
+						<div class="hero-image">
+							<img width={1020} height={510} src={heroImage} alt="" />
+						</div>
+					)}
+
+					<header class="post-header">
+						<div class="post-meta-row">
+							<FormattedDate date={pubDate} />
+							<span class="meta-dot">·</span>
+							<span class="reading-badge">{readingTime}</span>
+							{
+								updatedDate && (
+									<>
 										<span class="meta-dot">·</span>
 										<span class="last-updated-on">
 											{lang === 'en' ? 'Updated' : 'Actualizado'} <FormattedDate date={updatedDate} />
 										</span>
-									)
-								}
-							</div>
-							<h1>{title}</h1>
-							<div class="post-metadata">
-								{category && (
-									<a href={l(`/blog/category/${category}`)} class={`category-badge ${category}`}>
-										{activeCategoryTitles[category] || category}
-									</a>
-								)}
-								{tags.map((tag) => (
-									<a href={l(`/blog/tag/${tag}`)} class="tag-badge">#{tag}</a>
-								))}
-							</div>
-							<hr />
+									</>
+								)
+							}
 						</div>
 
-						<slot />
+						<h1 class="post-title">{title}</h1>
 
-						<ShareButtons title={title} lang={lang} />
-
-						{relatedPosts && relatedPosts.length > 0 && (
-							<section class="related-section">
-								<h3 class="related-title">{lang === 'en' ? 'Related Articles' : 'Artículos relacionados'}</h3>
-								<div class="related-grid">
-									{relatedPosts.map((rel) => (
-										<a href={l(`/blog/${rel.id.replace(/^en\//, '')}/`)} class="related-card">
-											<h4 class="related-card-title">{rel.data.title}</h4>
-											<div class="related-card-meta">
-												<FormattedDate date={rel.data.pubDate} />
-											</div>
-										</a>
+						<div class="post-taxonomies">
+							{category && (
+								<a href={l(`/blog/category/${category}`)} class="post-category">
+									{activeCategoryTitles[category] || category}
+								</a>
+							)}
+							{tags && tags.length > 0 && (
+								<div class="post-tags">
+									{tags.map((tag) => (
+										<a href={l(`/blog/tag/${tag}`)} class="post-tag">#{tag}</a>
 									))}
 								</div>
-							</section>
-						)}
+							)}
+						</div>
+					</header>
 
-						<!-- Sección de Comentarios con Giscus -->
-						<hr class="comments-divider" />
-						<section class="comments-section">
-							<h3>{t('comments.title')}</h3>
-							<div 
-								class="giscus"
-								data-repo={GISCUS_REPO}
-								data-repo-id={GISCUS_REPO_ID}
-								data-category={GISCUS_CATEGORY}
-								data-category-id={GISCUS_CATEGORY_ID}
-								data-mapping="pathname"
-								data-strict="0"
-								data-reactions-enabled="1"
-								data-emit-metadata="0"
-								data-input-position="bottom"
-								data-theme="transparent_dark"
-								data-lang={lang}
-							></div>
-							<div class="giscus-warning" style="display: none; padding: 1.5rem; border: 1px dashed var(--accent); border-radius: 8px; margin-top: 1.5rem; color: var(--text-color);">
-								<h4 style="margin: 0 0 0.5rem 0; color: var(--title-color);">{t('comments.giscusPendingTitle')}</h4>
-								<p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">
-									{t('comments.giscusPendingDesc')}
-								</p>
-							</div>
-						</section>
+					<div class="prose">
+						<slot />
 					</div>
+
+					<ShareButtons title={title} lang={lang} />
+
+					{relatedPosts && relatedPosts.length > 0 && (
+						<section class="related-section">
+							<h3 class="related-title">{lang === 'en' ? 'Related Articles' : 'Artículos relacionados'}</h3>
+							<ul class="related-list">
+								{relatedPosts.map((rel) => (
+									<li class="related-item">
+										<a href={l(`/blog/${rel.id.replace(/^en\//, '')}/`)} class="related-item-link">
+											<span class="related-item-title">{rel.data.title}</span>
+											<span class="related-item-date"><FormattedDate date={rel.data.pubDate} /></span>
+										</a>
+									</li>
+								))}
+							</ul>
+						</section>
+					)}
+
+					<!-- Sección de Comentarios con Giscus -->
+					<hr class="comments-divider" />
+					<section class="comments-section">
+						<h3>{t('comments.title')}</h3>
+						<div 
+							class="giscus"
+							data-repo={GISCUS_REPO}
+							data-repo-id={GISCUS_REPO_ID}
+							data-category={GISCUS_CATEGORY}
+							data-category-id={GISCUS_CATEGORY_ID}
+							data-mapping="pathname"
+							data-strict="0"
+							data-reactions-enabled="1"
+							data-emit-metadata="0"
+							data-input-position="bottom"
+							data-theme="transparent_dark"
+							data-lang={lang}
+						></div>
+						<div class="giscus-warning" style="display: none; padding: 1.25rem; border: 1px dashed var(--border-color); border-radius: var(--radius); margin-top: 1.5rem; color: var(--text-color);">
+							<h4 style="margin: 0 0 0.5rem 0; color: var(--title-color);">{t('comments.giscusPendingTitle')}</h4>
+							<p style="margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+								{t('comments.giscusPendingDesc')}
+							</p>
+						</div>
+					</section>
 				</article>
 
 				{headings && headings.length > 0 && (
@@ -595,13 +697,104 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 		<Lightbox />
 		<Footer />
 		<script>
-			import mermaid from 'mermaid';
-			
-			// Inicializar mermaid para buscar y renderizar elementos con clase "mermaid"
-			mermaid.initialize({
-				startOnLoad: true,
-				theme: 'dark',
-			});
+			// Renderizado dinámico y reactivo de diagramas Mermaid
+			const initMermaid = async () => {
+				const mermaidElements = Array.from(document.querySelectorAll<HTMLElement>('.mermaid'));
+				if (mermaidElements.length === 0) return;
+
+				// Guardar el código original de cada diagrama para permitir re-renderizado al cambiar de tema
+				mermaidElements.forEach((el) => {
+					if (!el.dataset.mermaidSrc) {
+						el.dataset.mermaidSrc = el.textContent || '';
+					}
+				});
+
+				try {
+					const { default: mermaid } = await import('mermaid');
+
+					const renderDiagrams = async () => {
+						const isDark = !document.documentElement.classList.contains('light');
+
+						mermaid.initialize({
+							startOnLoad: false,
+							securityLevel: 'loose',
+							theme: 'base',
+							themeVariables: {
+								darkMode: isDark,
+								background: isDark ? '#111214' : '#ffffff',
+								mainBkg: isDark ? '#17181a' : '#f9f9f8',
+								primaryColor: isDark ? '#17181a' : '#f9f9f8',
+								primaryBorderColor: isDark ? '#26282b' : '#e2e2de',
+								primaryTextColor: isDark ? '#e6e6e3' : '#1c1d1f',
+								secondaryColor: isDark ? '#1e2023' : '#f0f0ed',
+								secondaryBorderColor: isDark ? '#26282b' : '#e2e2de',
+								secondaryTextColor: isDark ? '#a0a09c' : '#57585a',
+								tertiaryColor: isDark ? '#141517' : '#ffffff',
+								tertiaryBorderColor: isDark ? '#26282b' : '#e2e2de',
+								tertiaryTextColor: isDark ? '#a0a09c' : '#57585a',
+								lineColor: isDark ? '#7d9bb8' : '#537496',
+								arrowheadColor: isDark ? '#7d9bb8' : '#537496',
+								clusterBkg: isDark ? '#141517' : '#f4f4f2',
+								clusterBorder: isDark ? '#26282b' : '#e2e2de',
+								edgeLabelBackground: isDark ? '#17181a' : '#f9f9f8',
+								nodeBorder: isDark ? '#26282b' : '#e2e2de',
+								nodeTextColor: isDark ? '#e6e6e3' : '#1c1d1f',
+								fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+								fontSize: '13px'
+							}
+						});
+
+						for (let i = 0; i < mermaidElements.length; i++) {
+							const el = mermaidElements[i];
+							const code = el.dataset.mermaidSrc || '';
+							if (!code.trim()) continue;
+
+							try {
+								const id = `mermaid-graph-${i}-${Date.now()}`;
+								const { svg } = await mermaid.render(id, code);
+								el.innerHTML = svg;
+								el.classList.add('mermaid-rendered');
+								el.classList.remove('has-error');
+							} catch (err) {
+								console.warn(`Error al renderizar diagrama Mermaid #${i}:`, err);
+								el.classList.add('has-error');
+								el.innerHTML = `
+									<div style="width: 100%;">
+										<span class="mermaid-error-badge">Diagrama (error de sintaxis)</span>
+										<pre class="mermaid-fallback"><code>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+									</div>
+								`;
+							}
+						}
+					};
+
+					await renderDiagrams();
+
+					// Observar cambios de tema (dark/light) en <html class="..."> para re-renderizar
+					const themeObserver = new MutationObserver((mutations) => {
+						for (const mutation of mutations) {
+							if (mutation.attributeName === 'class') {
+								renderDiagrams();
+								break;
+							}
+						}
+					});
+
+					themeObserver.observe(document.documentElement, {
+						attributes: true,
+						attributeFilter: ['class']
+					});
+				} catch (e) {
+					console.error('No se pudo cargar la librería Mermaid:', e);
+				}
+			};
+
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', initMermaid);
+			} else {
+				initMermaid();
+			}
+			document.addEventListener('astro:page-load', initMermaid);
 
 			// Lógica para inicializar y gestionar Giscus
 			const giscusContainer = document.querySelector('.giscus') as HTMLElement;
@@ -618,12 +811,10 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 				const inputPosition = giscusContainer.getAttribute('data-input-position') || 'bottom';
 				const lang = giscusContainer.getAttribute('data-lang') || 'es';
 
-				// Si no hay id de categoría configurado, mostramos advertencia al usuario y no cargamos Giscus
 				if (!categoryId) {
 					if (giscusWarning) giscusWarning.style.display = 'block';
 				} else {
-					// Determinar el tema de giscus en función de la clase dark de html
-					const isDark = document.documentElement.classList.contains('dark');
+					const isDark = !document.documentElement.classList.contains('light');
 					const theme = isDark ? 'transparent_dark' : 'light';
 
 					const script = document.createElement('script');
@@ -646,7 +837,7 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 
 					// Sincronizar el tema de Giscus cuando cambie el tema del sitio
 					const observer = new MutationObserver(() => {
-						const nextTheme = document.documentElement.classList.contains('dark') ? 'transparent_dark' : 'light';
+						const nextTheme = !document.documentElement.classList.contains('light') ? 'transparent_dark' : 'light';
 						const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
 						if (iframe && iframe.contentWindow) {
 							iframe.contentWindow.postMessage(
@@ -678,7 +869,7 @@ const activeCategoryTitles = categoryTitles[lang] || categoryTitles.es;
 			// Botón para copiar código en bloques <pre>
 			const isEn = window.location.pathname.startsWith('/en');
 			const copyLabel = isEn ? 'Copy' : 'Copiar';
-			const copiedLabel = isEn ? 'Copied!' : '¡Copiado!';
+			const copiedLabel = isEn ? 'Copied' : 'Copiado';
 
 			document.querySelectorAll('.prose pre').forEach((pre) => {
 				const wrapper = document.createElement('div');

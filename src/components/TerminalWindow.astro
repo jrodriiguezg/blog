@@ -1,5 +1,4 @@
 ---
-// Props para personalizar el titulo de la ventana
 export interface Props {
   title?: string;
 }
@@ -9,73 +8,92 @@ const { title = "bash" } = Astro.props;
 
 <div class="terminal-container">
   <div class="terminal-header">
-    <div class="terminal-buttons">
-      <span class="btn close"></span>
-      <span class="btn minimize"></span>
-      <span class="btn maximize"></span>
+    <div class="terminal-dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
     </div>
-    <div class="terminal-title">{title}</div>
+    <div class="terminal-title" title={title}>{title}</div>
   </div>
   <div class="terminal-body">
-    <!-- El slot renderiza el bloque de codigo markdown que envuelvas -->
     <slot />
   </div>
 </div>
 
 <style>
-  /* Contenedor principal de la terminal */
   .terminal-container {
-    background-color: #1e1e1e;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    margin: 1.5rem 0;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    margin: 1.75rem 0;
     overflow: hidden;
+    max-width: 100%;
+    width: 100%;
   }
 
-  /* Barra de titulo superior */
   .terminal-header {
-    background-color: #2d2d2d;
-    padding: 0.5rem 1rem;
+    background-color: var(--surface-hover);
+    padding: 0.4rem 0.85rem;
     display: flex;
     align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    min-width: 0;
   }
 
-  /* Contenedor de botones macOS/Linux */
-  .terminal-buttons {
+  .terminal-dots {
     display: flex;
-    gap: 6px;
+    gap: 5px;
+    flex-shrink: 0;
   }
 
-  /* Estilos base de los botones */
-  .btn {
-    width: 12px;
-    height: 12px;
+  .dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
+    background-color: var(--border-hover);
   }
 
-  /* Colores especificos de cada boton */
-  .close { background-color: #ff5f56; }
-  .minimize { background-color: #ffbd2e; }
-  .maximize { background-color: #27c93f; }
-
-  /* Texto del titulo */
   .terminal-title {
-    color: #a0a0a0;
-    font-family: monospace;
-    font-size: 0.85rem;
-    margin-left: 1rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    margin-left: 0.75rem;
     user-select: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
   }
 
-  /* Area donde se inyecta el codigo */
   .terminal-body {
-    padding: 1rem;
+    padding: 0.85rem 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    font-size: 0.88rem;
   }
 
-  /* Ajustar los bloques <pre> generados por Astro para que encajen */
   .terminal-body :global(pre) {
     margin: 0 !important;
     background: transparent !important;
+    border: none !important;
     padding: 0 !important;
+    overflow-x: auto !important;
+    max-width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    .terminal-header {
+      padding: 0.35rem 0.65rem;
+    }
+    .terminal-title {
+      font-size: 0.74rem;
+      margin-left: 0.5rem;
+    }
+    .terminal-body {
+      padding: 0.75rem 0.65rem;
+      font-size: 0.82rem;
+    }
   }
 </style>
