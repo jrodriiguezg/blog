@@ -1,0 +1,79 @@
+---
+title: "How Much It Costs Me to Run My Homelab Per Year vs. Paying for Subscriptions"
+description: "Real numbers on how much it costs me to maintain my homelab per year and how much I save on subscriptions."
+pubDate: 2026-11-17
+tags: ["homelab", "opinion", "self-hosted", "linux", "cloudflare"]
+---
+
+Every time I talk to someone about *self-hosting*, they ask me the same thing: "Why go through all that trouble when you can just pay for a subscription and get the same thing?"
+
+I always give two very simple answers: because I want to, and because I can. Though if you dig a bit deeper, it goes further than that—because with a subscription you don't actually own anything; you're just renting it without knowing what data you're giving away.
+
+Today I'm going to compare what I save on subscriptions against what my homelab has cost me and what I pay for electricity.
+
+There are some subscriptions I haven't stopped paying for because self-hosting them might not be worth it in the short term, such as Google One.
+
+---
+
+## 1. The real annual cost of my homelab
+
+To get started in the homelab world, you don't need enterprise hardware or thousands of euros. In my case, I have a Raspberry Pi 4B that was gifted to me when it launched and an HP EliteDesk I bought second-hand on Wallapop for 70 €; both machines have very low power consumption.
+
+Here is the breakdown of what I pay for everything (using an electricity rate of *0.16 €/kWh* as a reference):
+
+* **HP EliteDesk power consumption (real smart plug data):** According to the smart plug connected to it, real power draw averages around **25 - 28 W** (ranging from **20.7 W** at idle to **33.6 W** under light load). In **September** it recorded **17.68 kWh** (**2.83 €**) and in **October** **20.59 kWh** (**3.29 €**). Since I started measuring in **July through mid-November** (with partial July and November, plus full August, September, and October), it has accumulated **74.13 kWh** (**11.86 €**). Taking the September–October average (~**19.14 kWh/month**), that comes out to roughly `230 kWh` per year → **~36.80 €/year** (around **3.06 €/month**).
+* **Raspberry Pi 4B power consumption:** Because it runs in constant *undervolt* (the charger isn't the official one), it doesn't even reach the usual 4 W: it hovers around **2.5 - 3 W** continuously. That's roughly `25 kWh` per year → **~4.00 €/year**.
+* **Personal domain (`jrodriiguezg.link`):** Annual renewal → **~7.00 €/year**. (Paid through 2028.)
+* **Tunnels, DNS, WAF, and static hosting (Cloudflare):** **0.00 €/year** (using the free plan with *Cloudflare Tunnel* so I don't have to open router ports).
+
+**Annual total:** **~47.80 € per year** (about **3.98 € per month**).
+
+*(Honest note: I'm not counting the initial hardware purchase here because a second-hand mini-PC and a Raspberry Pi pay for themselves in less than a year, and from then on the marginal cost is basically just electricity.)*
+
+Still, if we include the hardware cost, the breakdown looks like this:
+
+| Item | Cost |
+| :--- | :---: |
+| HP EliteDesk | 70 € |
+| Raspberry Pi 4B *(gift; launch price in 2019 was 55 €)* | 0 € |
+| Electricity | 40.80 € |
+| Domain (through 2028) | 21 € |
+| **Total** | **131.80 €** |
+
+One more clarification: the hardware upgrades and external hard drives didn't cost me anything either—they are recycled parts from other machines (long live the circular economy) or spares I already had lying around at home.
+
+---
+
+## 2. What I stop paying for in subscriptions
+
+What real services are running inside to replace commercial plans? Doing a direct equivalence with standard individual rates in 2026:
+
+| Self-hosted service | Commercial equivalent | Commercial cost/year | My cost |
+| :--- | :--- | :---: | :---: |
+| **Navidrome** (personal music library) | Spotify / Apple Music Individual | ~132.00 € | 0 € |
+| **Jellyfin** (local/remote movies and TV) | Standard streaming platform | ~120.00 € | 0 € |
+| **Syncthing + local storage (4 TB)** | Google One / iCloud+ (2 TB) | ~120.00 € | 0 € |
+| **Gitea** (private repos and CI) | Private plans / extra storage | ~48.00 € | 0 € |
+| **Blog and portfolio on Cloudflare Pages + D1** | Managed hosting / basic VPS | ~60.00 € | 0 € |
+| **Uptime Kuma + Pi-hole + Tailscale** | Monitoring and personal VPN | ~60.00 € | 0 € |
+| **Equivalent total** | | **~540.00 €/year** | **~47.80 €/year** |
+
+Even being conservative and assuming you wouldn't pay for all of those subscriptions at the same time, **the net savings easily sit around 400 - 500 € every year**.
+
+---
+
+## 3. What doesn't show up on the bill (and is worth more than money)
+
+Saving money is the easiest argument to explain at a family dinner, but it isn't the main reason I keep all of this running:
+
+1. **Immunity to price hikes and feature cuts:** Nobody is going to raise my subscription by 25% next month or strip away features that used to be included.
+2. **Privacy and real ownership:** My files, my carefully tagged music library, and my databases sit on physical drives under my control, in open formats I can migrate tomorrow with a single `rsync`.
+3. **Real systems learning:** Maintaining a stack with Linux, Docker, reverse proxies, split DNS, and WAF rules teaches more about networking and security than any theoretical course.
+
+---
+
+## The fine print: the cost in time
+
+It would be dishonest to say this is "free" without mentioning time. Self-hosting requires updating containers, keeping an eye on backups, and fixing the occasional hiccup when an update breaks a service.
+
+But once you have a solid foundation—automated, with no open ports thanks to encrypted tunnels and alerts if anything goes down—actual maintenance doesn't even take **15 minutes a month**. And in return, you get a fast, private cloud that is completely yours for the price of a coffee a week.

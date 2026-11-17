@@ -1,0 +1,83 @@
+---
+title: "Cuánto me cuesta mantener mi homelab al año vs. pagar suscripciones"
+description: "Cálculos reales de consumo eléctrico, hardware y mantenimiento de mi homelab al año frente al ahorro en suscripciones."
+pubDate: 2026-11-17
+tags: ["homelab", "opinion", "self-hosted", "linux", "cloudflare"]
+---
+
+Cada vez que hablo con alguien de *self-hosting* me pregunta lo mismo: «¿para qué te complicas tanto si puedes pagar una suscripción y tener lo mismo?».
+
+Yo siempre respondo dos cosas muy simples: porque quiero y porque puedo. Aunque, si se analiza, va a más, porque en verdad con una suscripción no poseemos nada; simplemente lo alquilamos sin saber qué datos cedemos.
+
+Hoy voy a comparar lo que me ahorro en suscripciones frente a lo que me ha costado el homelab y lo que pago de luz.
+
+Hay suscripciones que no he dejado de pagar porque quizás autoalojarlas no me sale a cuenta a corto plazo, como puede ser Google One.
+
+---
+
+## 1. El coste real de mi homelab al año
+
+Para empezar en el mundo del homelab no es necesario un hardware empresarial ni gastar miles de euros. En mi caso tengo una Raspberry Pi 4B que me regalaron cuando salió y un HP EliteDesk que compré en Wallapop por 70 €; estos dos equipos tienen un consumo muy reducido.
+
+Aquí hago el desglose de cuánto pago por cada cosa (usando como referencia un precio eléctrico de *0,16 €/kWh*):
+
+* **Consumo eléctrico del HP EliteDesk (datos reales del enchufe inteligente):** Según el enchufe inteligente que tengo, el consumo real ronda los **25 - 28 W** de media (oscilando entre **20,7 W** en reposo y **33,6 W** con algo de carga). En **septiembre** registró **17,68 kWh** (**2,83 €**) y en **octubre** **20,59 kWh** (**3,29 €**). Desde que empecé a medir en **julio hasta mediados de noviembre** (con julio y noviembre parciales, más agosto, septiembre y octubre completos) lleva acumulados **74,13 kWh** (**11,86 €**). Tomando la media de septiembre y octubre (~**19,14 kWh/mes**), al año son unos `230 kWh` → **~36,80 €/año** (unos **3,06 €/mes**).
+* **Consumo de la Raspberry Pi 4B:** Al tenerla con *undervolt* constante (porque el cargador no es el oficial), no llega ni a los 4 W habituales: ronda los **2,5 - 3 W** constantes. Al año son unos `25 kWh` → **~4,00 €/año**.
+* **Dominio personal (`jrodriiguezg.link`):** Renovación anual → **~7,00 €/año**. (Lo tengo pagado hasta 2028)
+* **Túneles, DNS, WAF y alojamiento estático (Cloudflare):** **0,00 €/año** (usando el plan gratuito con *Cloudflare Tunnel* para no abrir puertos en el router).
+
+**Total anual:** **~47,80 € al año** (unos **3,98 € al mes**).
+
+*(Nota honesta: aquí no cuento la compra inicial del hardware porque un mini-PC de segunda mano y una Raspberry Pi se amortizan solos en menos de un año, y a partir de ahí el coste marginal es prácticamente solo la luz).*
+
+Pero si agregamos el coste del hardware, el cálculo quedaría así:
+
+| Concepto | Coste |
+| :--- | :---: |
+| HP EliteDesk | 70 € |
+| Raspberry Pi 4B *(regalo; precio de salida en 2019: 55 €)* | 0 € |
+| Electricidad | 40,80 € |
+| Dominio (hasta 2028) | 21 € |
+| **Total** | **131,80 €** |
+
+Otra aclaración: las ampliaciones de hardware y los discos duros externos tampoco me han costado nada; son piezas recicladas de otros equipos (viva la economía circular) o que tenía por casa.
+
+---
+
+## 2. Lo que dejo de pagar en suscripciones
+
+¿Qué servicios reales están corriendo ahí dentro y que planes comerciales sustituye? Haciendo la equivalencia directa con tarifas individuales en 2026:
+
+| Servicio autoalojado | Equivalente comercial | Coste comercial/año | Mi coste |
+| :--- | :--- | :---: | :---: |
+| **Navidrome** (biblioteca musical propia) | Spotify / Apple Music Individual | ~132,00 € | 0 € |
+| **Jellyfin** (cine y series en local/remoto) | Plataforma de streaming estándar | ~120,00 € | 0 € | 
+| **Syncthing + almacenamiento local (4 TB)** | Google One / iCloud+ (2 TB) | ~120,00 € | 0 € |
+| **Gitea** (repositorios privados y CI) | Planes privados / almacenamiento extra | ~48,00 € | 0 € |
+| **Blog y portfolio en Cloudflare Pages + D1** | Hosting gestionado / VPS básico | ~60,00 € | 0 € |
+| **Uptime Kuma + Pi-hole + Tailscale** | Monitorización y VPN personal | ~60,00 € | 0 € |
+| **Total equivalente** | | **~540,00 €/año** | **~47,80 €/año** |
+
+Esta tabla es en mi caso, hay gente con mas suscripciones, otros con menos pero el ahorro creo que sigue siendo real, 47 euros al año por todo esto y me queda hueco para mas.
+Siendo honesto dependo de algunas suscripciones; en este caso dos: Amazon Prime con el plan jovenes por unos 3 eur al mes y Google AI Pro que con descuento se me queda en 6 euros
+---
+
+## 3. Lo que no sale en la factura (y vale más que el dinero)
+
+El ahorro economico quizas es lo que mas puede atraer a alguien a esto, pero no es el motivo principal por el que mantengo esto montado:
+
+1. **Inmunidad frente a subidas de precio y recortes:** Nadie me va a subir la tarifa un 25% el mes que viene ni me va a quitar funciones que antes venían incluidas.
+2. **Privacidad y propiedad real:** Mis archivos, mi música etiquetada a mi gusto y mis bases de datos están en discos físicos bajo mi control, en formatos abiertos que puedo migrar mañana mismo con un `rsync`.
+3. **Aprendizaje real de sistemas:** Mantener una pila con Linux, Docker, proxies inversos, DNS dividido y reglas de WAF enseña más sobre redes y seguridad que cualquier curso teórico.
+
+---
+
+## La letra pequeña: el coste en tiempo
+
+Es trampa decir que todo esto es gratis; supone tiempo y no poco que digamos, mi primer stack que es el que se encuentra en la raspberry pi me llevo unas 12 horas seguidas desplegarlo.
+
+Luego llego el elitedesk que en este caso el stack va cambiando segun mi uso, hay contenedores que estan desde el primer dia hay otros que estaban y ya no estan, aveces descubro algo nuevo y lo despliego.
+
+A todo esto hay que sumar copias de seguridad, revision de logs, mantenimiento de vez en cuando, etc. Quizas el coste monetario sea bajo pero para un usuario con no muchas ganas el resto de cosas puede ser un poco agobio.
+
+En resumen esto depende de cada uno.
